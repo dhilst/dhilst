@@ -29,8 +29,10 @@ nnoremap <TAB> gt
 nnoremap <S-TAB> gT
 
 function! DHUpdateDotFiles()
-    silent !git -C ~/code/dhilst commit -a -m 'update config'
-    silent !git -C ~/code/dhilst push origin master
+    echom 'Updating configs ...'
+    silent! !git -C ~/code/dhilst commit -a -m 'update config'
+    silent! !git -C ~/code/dhilst push origin master
+    redraw!
 endfunction
 command DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
 
