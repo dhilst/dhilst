@@ -28,18 +28,14 @@ nnoremap <leader>/ :BLines<CR>
 nnoremap <TAB> gt
 nnoremap <S-TAB> gT
 
+colorscheme monokai
+
 function! DHUpdateDotFiles()
     echom 'Updating configs ...'
-    silent! !git -C ~/code/dhilst commit -a -m 'update config'
-    silent! !git -C ~/code/dhilst push origin master
+    silent! !git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master
     redraw!
 endfunction
 command DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
-
-noremap <C-c><C-c><C-c> :qa!<CR>
-noremap <C-c><C-u><C-u> :!git -C ~/code/dhilst commit -a --allow-empty \&\& git -C ~/code/dhilst
-
-colorscheme monokai
 
 " Workarround for bug in gnome-terminal
 function Yank() range
