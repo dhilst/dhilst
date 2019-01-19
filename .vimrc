@@ -15,6 +15,8 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-rsi'
 Plug 'scrooloose/nerdtree'
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'w0rp/ale', { 'on': ':ALEToggle' }
 call plug#end()
 
 let mapleader=' '
@@ -24,6 +26,7 @@ nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
 nnoremap <leader>f :Ag<CR>
 nnoremap <leader>b :Buffer<CR>
+nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
 nnoremap <TAB> gt
 nnoremap <S-TAB> gT
