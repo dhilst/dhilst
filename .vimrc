@@ -18,16 +18,24 @@ Plug 'christoomey/vim-tmux-navigator'
 call plug#end()
 
 let mapleader=' '
-nnoremap <leader>v :tabe! ~/.vimrc<CR>
+nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
+nnoremap <leader>~ :Files ~<CR>
 nnoremap <leader>f :Ag<CR>
 nnoremap <leader>b :Buffer<CR>
 nnoremap <leader>/ :BLines<CR>
 nnoremap <TAB> gt
 nnoremap <S-TAB> gT
 
+function! DHUpdateDotFiles()
+    silent !git -C ~/code/dhilst commit -a -m 'update config'
+    silent !git -C ~/code/dhilst push origin master
+endfunction
+command DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
+
 noremap <C-c><C-c><C-c> :qa!<CR>
+noremap <C-c><C-u><C-u> :!git -C ~/code/dhilst commit -a --allow-empty \&\& git -C ~/code/dhilst
 
 colorscheme monokai
 
