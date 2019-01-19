@@ -32,7 +32,7 @@ colorscheme monokai
 
 function! DHUpdateDotFiles()
     echom 'Updating configs ...'
-    silent! !git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master
+    execute "!git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master"
     redraw!
 endfunction
 command DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
