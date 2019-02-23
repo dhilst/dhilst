@@ -4,19 +4,28 @@ set backupcopy=yes
 set mouse=a
 set ts=2 sts=2 sw=2 et
 set bg=dark
+set scrolloff=10
+
+filetype plugin on
+filetype plugin indent on
 
 call plug#begin('~/.vim/plugged')
 Plug 'crusoexia/vim-monokai'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive' 
-Plug 'tpope/vim-sensible'
+"Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-rsi'
+"Plug 'tpope/vim-rsi'
 Plug 'scrooloose/nerdtree'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'w0rp/ale', { 'on': ':ALEToggle' }
+Plug 'w0rp/ale', { 'on': 'ALEToggle' }
+Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
+Plug 'alvan/vim-closetag'
+
 call plug#end()
 
 let mapleader=' '
@@ -30,6 +39,7 @@ nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
 nnoremap <TAB> gt
 nnoremap <S-TAB> gT
+noremap <silent> <ESC> :noh<return>
 
 colorscheme monokai
 
@@ -47,3 +57,11 @@ function Yank() range
     redraw!
 endfunction
 xnoremap <C-y> :call Yank()<CR>
+
+
+au FileType go set ts=4 sts=4 sw=4 et
+au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
+au! BufWrite *.jsx :normal gg=G``
+
+let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx"
+let g:closetag_xhtml_filenames = '*.jsx'
