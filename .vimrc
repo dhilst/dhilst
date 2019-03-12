@@ -5,6 +5,8 @@ set mouse=a
 set ts=2 sts=2 sw=2 et
 set bg=dark
 set scrolloff=10
+set incsearch
+set clipboard=unnamedplus
 
 filetype plugin on
 filetype plugin indent on
