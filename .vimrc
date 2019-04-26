@@ -27,7 +27,7 @@ Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' 
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
 Plug 'alvan/vim-closetag'
-
+Plug 'leafgarland/typescript-vim'
 call plug#end()
 
 let mapleader=' '
@@ -41,7 +41,7 @@ nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
 nnoremap <TAB> gt
 nnoremap <S-TAB> gT
-noremap <silent> <ESC> :noh<return>
+noremap <silent> <leader><leader> :noh<return>
 
 colorscheme monokai
 
@@ -61,7 +61,7 @@ endfunction
 xnoremap <C-y> :call Yank()<CR>
 
 
-au FileType go set ts=4 sts=4 sw=4 et
+au FileType go,typescript set ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 au! BufWrite *.jsx :normal gg=G``
 
