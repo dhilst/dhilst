@@ -28,6 +28,7 @@ Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
 Plug 'alvan/vim-closetag'
 Plug 'leafgarland/typescript-vim'
+Plug 'rust-lang/rust.vim'
 call plug#end()
 
 let mapleader=' '
