@@ -62,8 +62,9 @@ endfunction
 xnoremap <C-y> :call Yank()<CR>
 
 
-au FileType go,typescript set ts=4 sts=4 sw=4 et
+au FileType go,typescript,php set ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
+" Workaround for bug on vim-jsx
 au! BufWrite *.jsx :normal gg=G``
 
 let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx"
