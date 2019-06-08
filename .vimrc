@@ -7,6 +7,7 @@ set bg=dark
 set scrolloff=10
 set incsearch
 set clipboard=unnamedplus
+set ignorecase
 
 filetype plugin on
 filetype plugin indent on
@@ -25,7 +26,7 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'w0rp/ale', { 'on': 'ALEToggle' }
 Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
+Plug 'neoclide/vim-jsx-improve'
 Plug 'alvan/vim-closetag'
 Plug 'leafgarland/typescript-vim'
 Plug 'rust-lang/rust.vim'
@@ -65,7 +66,14 @@ xnoremap <C-y> :call Yank()<CR>
 au FileType go,typescript,php set ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 " Workaround for bug on vim-jsx
-au! BufWrite *.jsx :normal gg=G``
+"au! BufWrite *.jsx :normal gg=G``
 
 let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx"
 let g:closetag_xhtml_filenames = '*.jsx'
+
+" Command for git grep
+" - fzf#vim#grep(command, with_column, [options], [fullscreen])
+command! -bang -nargs=* Hg
+  \ call fzf#vim#grep(
+  \   'hrep '.shellescape(<q-args>).' .', 0,
+  \   {}, <bang>0)
