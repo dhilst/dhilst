@@ -16,20 +16,21 @@ call plug#begin('~/.vim/plugged')
 Plug 'crusoexia/vim-monokai'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'tpope/vim-fugitive' 
+"Plug 'tpope/vim-fugitive' 
 "Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
 "Plug 'tpope/vim-rsi'
 Plug 'scrooloose/nerdtree'
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'w0rp/ale', { 'on': 'ALEToggle' }
-Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'pangloss/vim-javascript'
-Plug 'neoclide/vim-jsx-improve'
-Plug 'alvan/vim-closetag'
 Plug 'leafgarland/typescript-vim'
-Plug 'rust-lang/rust.vim'
+Plug 'maxmellon/vim-jsx-pretty'
+Plug 'w0rp/ale', { 'on': 'ALEToggle' }
+"Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+"Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
+"Plug 'alvan/vim-closetag'
+"Plug 'mattn/gist-vim'
+"Plug 'rust-lang/rust.vim'
 call plug#end()
 
 let mapleader=' '
@@ -37,7 +38,8 @@ nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
-nnoremap <leader>f :Hg<CR>
+nnoremap <leader>f :Ag<CR>
+nnoremap <leader>g :Hg<CR>
 nnoremap <leader>b :Buffer<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
@@ -63,13 +65,11 @@ endfunction
 xnoremap <C-y> :call Yank()<CR>
 
 
-au FileType go,typescript,php set ts=4 sts=4 sw=4 et
+au FileType go,php set ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
-" Workaround for bug on vim-jsx
-"au! BufWrite *.jsx :normal gg=G``
 
-let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx"
-let g:closetag_xhtml_filenames = '*.jsx'
+let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx"
+let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
 
 " Command for git grep
 " - fzf#vim#grep(command, with_column, [options], [fullscreen])
