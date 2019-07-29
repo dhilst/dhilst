@@ -8,6 +8,7 @@ set scrolloff=10
 set incsearch
 set clipboard=unnamedplus
 set ignorecase
+set exrc
 
 filetype plugin on
 filetype plugin indent on
@@ -16,9 +17,11 @@ call plug#begin('~/.vim/plugged')
 Plug 'crusoexia/vim-monokai'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'tpope/vim-fugitive' 
+Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-abolish'
+"Plug 'vsushkov/vim-phpcs'
 "Plug 'tpope/vim-rsi'
 Plug 'scrooloose/nerdtree'
 Plug 'christoomey/vim-tmux-navigator'
@@ -68,7 +71,7 @@ xnoremap <C-y> :call Yank()<CR>
 au FileType go,php set ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 
-let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx"
+let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjango"
 let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
 
 " Command for git grep
@@ -82,4 +85,5 @@ command! -bang -nargs=* Hg
 " Show trailing white spaces
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
+
 
