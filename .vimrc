@@ -8,6 +8,7 @@ set scrolloff=10
 set incsearch
 set clipboard=unnamedplus
 set ignorecase
+set smartcase
 set exrc
 
 filetype plugin on
@@ -82,6 +83,11 @@ command! -bang -nargs=* Hg
   \   {}, <bang>0)
 
 
+command! -bang -nargs=* Og
+  \ call fzf#vim#grep(
+  \   'ogrep '.shellescape(<q-args>), 0,
+  \   {}, <bang>0)
+"
 " Show trailing white spaces
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
