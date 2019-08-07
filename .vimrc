@@ -1,19 +1,3 @@
-"set clipboard=unnamedplus
-set ls=2
-set backupcopy=yes
-set mouse=a
-set ts=2 sts=2 sw=2 et
-set bg=dark
-set scrolloff=10
-set incsearch
-set clipboard=unnamedplus
-set ignorecase
-set smartcase
-set exrc
-
-filetype plugin on
-filetype plugin indent on
-
 call plug#begin('~/.vim/plugged')
 Plug 'crusoexia/vim-monokai'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -35,7 +19,23 @@ Plug 'w0rp/ale', { 'on': 'ALEToggle' }
 Plug 'alvan/vim-closetag'
 Plug 'mattn/gist-vim'
 "Plug 'rust-lang/rust.vim'
+Plug 'sapphirecat/php-psr2-vim'
 call plug#end()
+
+"set clipboard=unnamedplus
+set ls=2
+set backupcopy=yes
+set mouse=a
+set ts=2 sts=2 sw=2 et
+set bg=dark
+set scrolloff=10
+set incsearch
+set clipboard=unnamedplus
+set smartcase
+set exrc
+
+filetype plugin on
+filetype plugin indent on
 
 let mapleader=' '
 nnoremap <leader>v :e! ~/.vimrc<CR>
@@ -92,4 +92,5 @@ command! -bang -nargs=* Og
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
 
-
+" Indent php switch statements
+let g:PHP_vintage_case_default_indent = 1
