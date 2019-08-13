@@ -1,3 +1,4 @@
+
 call plug#begin('~/.vim/plugged')
 Plug 'crusoexia/vim-monokai'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -20,6 +21,11 @@ Plug 'alvan/vim-closetag'
 Plug 'mattn/gist-vim'
 "Plug 'rust-lang/rust.vim'
 Plug 'sapphirecat/php-psr2-vim'
+Plug 'osyo-manga/vim-over'
+Plug 'ervandew/supertab'
+Plug 'Valloric/YouCompleteMe'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 call plug#end()
 
 "set clipboard=unnamedplus
@@ -47,8 +53,11 @@ nnoremap <leader>g :Hg<CR>
 nnoremap <leader>b :Buffer<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
-nnoremap <TAB> gt
-nnoremap <S-TAB> gT
+nnoremap <leader>s :OverCommandLine<CR>
+noremap <leader>sn :UltiSnipsEdit<CR>
+"conflicted with ultisnip
+"nnoremap <TAB> gt
+"nnoremap <S-TAB> gT
 noremap <silent> <leader><leader> :noh<return>
 
 colorscheme monokai
@@ -85,7 +94,7 @@ command! -bang -nargs=* Hg
 
 command! -bang -nargs=* Og
   \ call fzf#vim#grep(
-  \   'ogrep '.shellescape(<q-args>), 0,
+  \   'ogrepcomplex '.shellescape(<q-args>).' .', 0,
   \   {}, <bang>0)
 "
 " Show trailing white spaces
@@ -94,3 +103,17 @@ match ExtraWhitespace /\s\+$/
 
 " Indent php switch statements
 let g:PHP_vintage_case_default_indent = 1
+
+" make YCM compatible with UltiSnips (using supertab)
+let g:AutoPairsMapCR = 0
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:SuperTabDefaultCompletionType = '<C-n>'
+let g:UltiSnipsEditSplit = 'vertical'
+" better key bindings for UltiSnipsExpandTrigger
+set rtp+=~/.vim/UltiSnips
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+let g:UltiSnipsSnippetsDir=$HOME."/.vim/UltiSnips"
+let g:UltiSnipsSnippetDirectories=[g:UltiSnipsSnippetsDir]
