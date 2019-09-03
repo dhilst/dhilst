@@ -29,6 +29,7 @@ Plug 'honza/vim-snippets'
 call plug#end()
 
 "set clipboard=unnamedplus
+set showcmd
 set ls=2
 set backupcopy=yes
 set mouse=a
@@ -53,12 +54,23 @@ nnoremap <leader>g :Hg<CR>
 nnoremap <leader>b :Buffer<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
-nnoremap <leader>s :OverCommandLine<CR>
-noremap <leader>sn :UltiSnipsEdit<CR>
+noremap <leader>s :OverCommandLine<CR>
+nnoremap <leader>S :UltiSnipsEdit<CR>
 "conflicted with ultisnip
 "nnoremap <TAB> gt
 "nnoremap <S-TAB> gT
 noremap <silent> <leader><leader> :noh<return>
+
+fun! VisualMap()
+  y"v
+  echo @".v
+end
+
+endfun
+command -range V :call VisualMap()
+nnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r><c-w>').'<CR>'
+vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
+nnoremap <silent> <F9> :so ~/.vimrc<CR>
 
 colorscheme monokai
 
@@ -105,7 +117,6 @@ match ExtraWhitespace /\s\+$/
 let g:PHP_vintage_case_default_indent = 1
 
 " make YCM compatible with UltiSnips (using supertab)
-let g:AutoPairsMapCR = 0
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 let g:SuperTabDefaultCompletionType = '<C-n>'
@@ -117,3 +128,7 @@ let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 "let g:UltiSnipsSnippetsDir=$HOME."/.vim/UltiSnips"
 "let g:UltiSnipsSnippetDirectories=[g:UltiSnipsSnippetsDir]
+
+let g:ale_linters = {
+            \   'php': ['php'],
+            \}
