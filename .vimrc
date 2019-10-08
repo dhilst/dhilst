@@ -26,6 +26,7 @@ Plug 'ervandew/supertab'
 Plug 'Valloric/YouCompleteMe'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+Plug 'psf/black'
 call plug#end()
 
 "set clipboard=unnamedplus
@@ -68,6 +69,7 @@ end
 
 endfun
 command -range V :call VisualMap()
+noremap <C-x>; <ESC>:
 nnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r><c-w>').'<CR>'
 vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
 nnoremap <silent> <F9> :so ~/.vimrc<CR>
@@ -89,9 +91,10 @@ function Yank() range
 endfunction
 xnoremap <C-y> :call Yank()<CR>
 
-
-au FileType go,php set ts=4 sts=4 sw=4 et
+au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
+au FileType yaml setlocal ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
+au BufWritePre *.py silent execute ':Black'
 
 let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjango"
 let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
@@ -128,7 +131,9 @@ let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 "let g:UltiSnipsSnippetsDir=$HOME."/.vim/UltiSnips"
 "let g:UltiSnipsSnippetDirectories=[g:UltiSnipsSnippetsDir]
+"
 
 let g:ale_linters = {
             \   'php': ['php'],
-            \}
+            \   'python': ['pylint', 'mypy']
+
