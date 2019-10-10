@@ -136,4 +136,4 @@ let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 let g:ale_linters = {
             \   'php': ['php'],
             \   'python': ['pylint', 'mypy']
-
+            \ }
