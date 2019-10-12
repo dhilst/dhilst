@@ -1,4 +1,3 @@
-
 call plug#begin('~/.vim/plugged')
 Plug 'crusoexia/vim-monokai'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -63,13 +62,6 @@ nnoremap <leader>S :UltiSnipsEdit<CR>
 "nnoremap <S-TAB> gT
 noremap <silent> <leader>n :noh<return>
 
-fun! VisualMap()
-  y"v
-  echo @".v
-end
-
-endfun
-command -range V :call VisualMap()
 noremap <C-x>; <ESC>:
 nnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r><c-w>').'<CR>'
 vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
