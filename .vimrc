@@ -30,6 +30,7 @@ Plug 'psf/black'
 call plug#end()
 
 "set clipboard=unnamedplus
+set nohls
 set showcmd
 set ls=2
 set backupcopy=yes
@@ -60,7 +61,7 @@ nnoremap <leader>S :UltiSnipsEdit<CR>
 "conflicted with ultisnip
 "nnoremap <TAB> gt
 "nnoremap <S-TAB> gT
-noremap <silent> <leader><leader> :noh<return>
+noremap <silent> <leader>n :noh<return>
 
 fun! VisualMap()
   y"v
