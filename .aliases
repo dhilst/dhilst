@@ -1,3 +1,4 @@
 alias vim='eval $(jobs | ~/.local/bin/fg_vim.py)'
+alias nvim='eval $(jobs | ~/.local/bin/fg_vim.py)'
 
 # vim: set ft=sh:
