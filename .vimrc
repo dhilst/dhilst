@@ -57,6 +57,7 @@ nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
 noremap <leader>s :OverCommandLine<CR>
 nnoremap <leader>S :UltiSnipsEdit<CR>
+nnoremap <leader>q :wq!a<CR>
 "conflicted with ultisnip
 "nnoremap <TAB> gt
 "nnoremap <S-TAB> gT

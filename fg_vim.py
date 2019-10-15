@@ -8,9 +8,9 @@ if sys.stdin.isatty():
 
 data = sys.stdin.read().strip().split("\n")
 for d in data:
-    if "nvim" in d:
+    if "vim" in d:
         id = re.match(r"\[(\d+)\]", d).groups(1)[0]
         print(f"fg %{id}")
         sys.exit(0)
 else:
-    print("nvim")
+    print("/usr/bin/env nvim")
