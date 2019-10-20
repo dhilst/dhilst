@@ -75,21 +75,40 @@ function! DHUpdateDotFiles()
     execute "!git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master"
     redraw!
 endfunction
-command DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
+
+command! DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
 
 " Workarround for bug in gnome-terminal
-function Yank() range
+function! Yank() range
     silent! normal gvy
     silent! execute "!echo " . shellescape(@", 1) . " | xsel -b"
     redraw!
 endfunction
 xnoremap <C-y> :call Yank()<CR>
 
+let g:black_enabled = 1
+
+func! BlackToggle()
+  let g:black_enabled = !g:black_enabled
+  if g:black_enabled
+    echo "Black enabled"
+  else
+    echo "Black disabled"
+  end
+endfun
+
+func! BlackMaybe()
+  if g:black_enabled
+    execute ":Black"
+  endif
+endfunc
+
+au BufWritePost *.py call BlackMaybe()
+map <C-b> :call BlackToggle()<CR>
 au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
-au BufWritePre *.py silent execute ':Black'
-
+"au BufWritePre *.py silent :call Black()
 let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjango"
 let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
 

@@ -19,13 +19,14 @@
     ("a2cde79e4cc8dc9a03e7d9a42fabf8928720d420034b66aecc5b665bbf05d4e9" default)))
  '(package-selected-packages
    (quote
-    (helm-swoop ycm ivy flycheck xclip projectile-sift projectile company tmux-pane yaml-mode wrap-region monokai-theme helm-ag fzf expand-region ag)))
+    (company-jedi jedi helm-swoop ycm ivy flycheck xclip projectile-sift projectile company tmux-pane yaml-mode wrap-region monokai-theme helm-ag fzf expand-region ag)))
  '(tab-width 4))
 
 ;; ^-- Automatically managed stuff
 
 ;; Hooks
 (add-hook 'after-init-hook (lambda () (load-theme 'monokai)))
+(add-hook 'python-mode-hook 'jedi:setup)
 
 ;; Paths
 (add-to-list 'load-path "~/.fzf")
@@ -43,6 +44,8 @@
 (setq show-trailing-whitespace t)
 (setq inhibit-splash-screen t)
 (setq uniquify-buffer-name-style 'reverse)
+(setq jedi:complete-on-dot t)                 ; optional
+(setq python-shell-interpreter "python3")
 
 ;; Modes
 (xclip-mode t)
@@ -90,4 +93,4 @@ Repeated invocations toggle between the two most recently open buffers."
 (windmove-default-keybindings)
 
 ;; Initializations
-(server-start)
+;; (server-start)
