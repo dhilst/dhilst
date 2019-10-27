@@ -14,7 +14,7 @@ Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'w0rp/ale', { 'on': 'ALEToggle' }
-"Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 "Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'alvan/vim-closetag'
 Plug 'mattn/gist-vim'
@@ -26,6 +26,7 @@ Plug 'Valloric/YouCompleteMe'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'psf/black'
+Plug 'sheerun/vim-polyglot'
 call plug#end()
 
 "set clipboard=unnamedplus
@@ -58,6 +59,7 @@ nnoremap <leader>/ :BLines<CR>
 noremap <leader>s :OverCommandLine<CR>
 nnoremap <leader>S :UltiSnipsEdit<CR>
 nnoremap <leader>q :wq!a<CR>
+"
 "conflicted with ultisnip
 "nnoremap <TAB> gt
 "nnoremap <S-TAB> gT
@@ -104,11 +106,13 @@ func! BlackMaybe()
 endfunc
 
 au BufWritePost *.py call BlackMaybe()
-map <C-b> :call BlackToggle()<CR>
 au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
-"au BufWritePre *.py silent :call Black()
+au FileType python nnoremap <C-b> :call BlackToggle()<CR>
+au BufWritePre *.py silent :call BlackMaybe()
+"au BufWritePost *.go :GoImports
+au FileType go nnoremap <buffer> <F8> :GoRun<CR>
 let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjango"
 let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
 
@@ -150,3 +154,11 @@ let g:ale_linters = {
             \   'php': ['php'],
             \   'python': ['pylint', 'mypy']
             \ }
+
+
+let g:ale_fix_on_save = 1
+let g:ale_fixers = {
+      \ 'go': ['gofmt', 'goimports'],
+      \ }
+
+source  ~/.vim/abbrevs.vim
