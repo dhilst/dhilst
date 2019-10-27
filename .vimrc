@@ -88,34 +88,10 @@ function! Yank() range
 endfunction
 xnoremap <C-y> :call Yank()<CR>
 
-let g:black_enabled = 1
-
-func! BlackToggle()
-  let g:black_enabled = !g:black_enabled
-  if g:black_enabled
-    echo "Black enabled"
-  else
-    echo "Black disabled"
-  end
-endfun
-
-func! BlackMaybe()
-  if g:black_enabled
-    execute ":Black"
-  endif
-endfunc
-
-au BufWritePost *.py call BlackMaybe()
 au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
-au FileType python nnoremap <C-b> :call BlackToggle()<CR>
-au BufWritePre *.py silent :call BlackMaybe()
-"au BufWritePost *.go :GoImports
 au FileType go nnoremap <buffer> <F8> :GoRun<CR>
-let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjango"
-let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
-
 " Command for git grep
 " - fzf#vim#grep(command, with_column, [options], [fullscreen])
 command! -bang -nargs=* Hg
@@ -149,6 +125,9 @@ let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 "let g:UltiSnipsSnippetsDir=$HOME."/.vim/UltiSnips"
 "let g:UltiSnipsSnippetDirectories=[g:UltiSnipsSnippetsDir]
 "
+let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjango"
+let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
+
 
 let g:ale_linters = {
             \   'php': ['php'],
@@ -159,6 +138,7 @@ let g:ale_linters = {
 let g:ale_fix_on_save = 1
 let g:ale_fixers = {
       \ 'go': ['gofmt', 'goimports'],
+      \ 'python' ['autopep8', 'black']
       \ }
 
 source  ~/.vim/abbrevs.vim
