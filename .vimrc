@@ -27,6 +27,7 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'psf/black'
 Plug 'sheerun/vim-polyglot'
+Plug 'mattn/webapi-vim'
 call plug#end()
 
 "set clipboard=unnamedplus
@@ -131,14 +132,21 @@ let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
 
 let g:ale_linters = {
             \   'php': ['php'],
-            \   'python': ['pylint', 'mypy']
+            \   'python': ['pylint', 'mypy'],
+            \   'rust': ['cargo', 'rls', 'rustc'],
             \ }
 
 
 let g:ale_fix_on_save = 1
 let g:ale_fixers = {
       \ 'go': ['gofmt', 'goimports'],
-      \ 'python' ['autopep8', 'black']
+      \ 'python': ['autopep8', 'black'],
+      \ 'rust': ['rustfmt'],
       \ }
 
-source  ~/.vim/abbrevs.vim
+
+" Keep buffer position when switching buffers https://stackoverflow.com/questions/4251533/vim-keep-window-position-when-switching-buffers
+if v:version >= 700
+  au BufLeave * let b:winview = winsaveview()
+  au BufEnter * if(exists('b:winview')) | call winrestview(b:winview) | endif
+endif
