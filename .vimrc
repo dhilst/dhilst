@@ -73,22 +73,6 @@ nnoremap <silent> <F9> :so ~/.vimrc<CR>
 
 colorscheme monokai
 
-function! DHUpdateDotFiles()
-    echom 'Updating configs ...'
-    execute "!git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master"
-    redraw!
-endfunction
-
-command! DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
-
-" Workarround for bug in gnome-terminal
-function! Yank() range
-    silent! normal gvy
-    silent! execute "!echo " . shellescape(@", 1) . " | xsel -b"
-    redraw!
-endfunction
-xnoremap <C-y> :call Yank()<CR>
-
 au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.html.tera set filetype=htmljinja
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
@@ -157,6 +141,24 @@ if v:version >= 700
   au BufEnter * if(exists('b:winview')) | call winrestview(b:winview) | endif
 endif
 
+" Handy functions
+function! DHUpdateDotFiles()
+    echom 'Updating configs ...'
+    execute "!git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master"
+    redraw!
+endfunction
+
+command! DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
+
+" Workarround for bug in gnome-terminal
+function! Yank() range
+    silent! normal gvy
+    silent! execute "!echo " . shellescape(@", 1) . " | xsel -b"
+    redraw!
+endfunction
+xnoremap <C-y> :call Yank()<CR>
+
+
 let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE -i inventory/test_hosts -e @answers-2019120317.yml sms"
 " Executes the selected text as an ansible task. The command
 " is gathered from g:ansible_execute_task_command. The responsibity
@@ -189,4 +191,3 @@ function! AnsibleExecuteFile(file) abort
     execute "!".command
 endfunction
 command! AnsibleExecuteFile :call AnsibleExecuteFile(expand("%"))
-
