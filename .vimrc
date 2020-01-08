@@ -134,7 +134,8 @@ endfunction
 xnoremap <C-y> :call Yank()<CR>
 
 
-let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE -i inventory/test_hosts -e @answers-2019120317.yml sms"
+let g:ansible_answers = "answers-2019120317.yml"
+let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE -i inventory/test_hosts -e @".g:ansible_answers."sms"
 " Executes the selected text as an ansible task. The command
 " is gathered from g:ansible_execute_task_command. The responsibity
 " of selecting the right amout of text is to the user, the selected
@@ -199,3 +200,4 @@ au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 au FileType go nnoremap <buffer> <F8> :GoRun<CR>
 au FileType yaml.ansible vnoremap <buffer> <F7> <ESC>:AnsibleExecuteTask<CR>
 au FileType yaml.ansible nnoremap <buffer> <F8> :AnsibleExecuteFile<CR>
+au FileType yaml nnoremap <buffer> <expr> <F9> ":!ansible-playbook ".expand("%")." -i inventory/test_hosts -e @".g:ansible_answers."<CR>"
