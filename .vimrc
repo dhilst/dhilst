@@ -111,7 +111,7 @@ let g:ale_fixers = {
 
 " ansible stuff
 let g:ansible_answers = "answers-2019120317.yml"
-let g:ansible_execute_task_command = "ansible-playbook -vvv test/include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers
+let g:ansible_execute_task_command = "ansible-playbook -vv test/include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers
 let g:ansible_execute_playbook_command = "ansible-playbook -vv $FILE -i inventory/test_hosts -e @".g:ansible_answers
 
 " Keep buffer position when switching buffers https://stackoverflow.com/questions/4251533/vim-keep-window-position-when-switching-buffers
@@ -168,7 +168,7 @@ function! AnsibleExecuteFile(file) abort
     let command = substitute(g:ansible_execute_task_command, "$FILE", a:file, "")
     execute "!".command
 endfunction
-command! AnsibleExecuteFile :call AnsibleExecuteFile(expand("%"))
+command! AnsibleExecuteFile :call AnsibleExecuteFile(expand("%:p"))
 
 " Executes the opened playbook
 function! AnsibleExecutePlaybook(playbook) abort
