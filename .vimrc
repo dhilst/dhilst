@@ -28,6 +28,7 @@ Plug 'honza/vim-snippets'
 Plug 'psf/black'
 Plug 'sheerun/vim-polyglot'
 Plug 'mattn/webapi-vim'
+Plug 'mitsuhiko/vim-jinja'
 call plug#end()
 
 "set clipboard=unnamedplus
@@ -52,8 +53,7 @@ nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
-nnoremap <leader>f :Ag<CR>
-nnoremap <leader>g :Hg<CR>
+nnoremap <leader>f :Rg<CR>
 nnoremap <leader>b :Buffer<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
@@ -90,6 +90,7 @@ endfunction
 xnoremap <C-y> :call Yank()<CR>
 
 au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
+au BufRead,BufNewFile *.html.tera set filetype=htmljinja
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 au FileType go nnoremap <buffer> <F8> :GoRun<CR>
@@ -104,6 +105,11 @@ command! -bang -nargs=* Hg
 command! -bang -nargs=* Og
   \ call fzf#vim#grep(
   \   'ogrepcomplex '.shellescape(<q-args>).' .', 0,
+  \   {}, <bang>0)
+
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   '/home/dhilst/code/rust/foo/target/release/rgrep . '.shellescape(<q-args>), 0,
   \   {}, <bang>0)
 "
 " Show trailing white spaces
@@ -126,7 +132,7 @@ let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 "let g:UltiSnipsSnippetsDir=$HOME."/.vim/UltiSnips"
 "let g:UltiSnipsSnippetDirectories=[g:UltiSnipsSnippetsDir]
 "
-let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjango"
+let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjango,*.html.tera"
 let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
 
 
@@ -150,3 +156,23 @@ if v:version >= 700
   au BufLeave * let b:winview = winsaveview()
   au BufEnter * if(exists('b:winview')) | call winrestview(b:winview) | endif
 endif
+
+let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE -i inventory/test_hosts -e @answers-2019120317.yml sms"
+function! AnsibleExecuteTask() range abort
+    silent! normal gvy
+    let tempname = tempname()
+    let lines = split(@", '\n')
+    let res = writefile(lines, tempname)
+    if res == -1
+      throw "writefile failed " . tempname
+    endif
+    let command = substitute(g:ansible_execute_task_command, "$FILE", tempname, "")
+    try
+      execute "!".command
+    finally
+      silent! execute "!rm -f ".tempname
+    endtry
+endfunction
+command! -range AnsibleExecuteTask :call AnsibleExecuteTask()
+
+
