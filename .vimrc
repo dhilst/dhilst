@@ -127,7 +127,7 @@ function! DHUpdateDotFiles()
     redraw!
 endfunction
 
-command! DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
+command! DHUpdateDotFiles :call DHUpdateDotFiles()<CR
 
 " Workarround for bug in gnome-terminal
 function! Yank() range
