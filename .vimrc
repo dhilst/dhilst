@@ -48,36 +48,8 @@ set exrc
 filetype plugin on
 filetype plugin indent on
 
-let mapleader=' '
-nnoremap <leader>v :e! ~/.vimrc<CR>
-nnoremap <leader>e :e! %:h<CR>
-nnoremap <leader>p :Files<CR>
-nnoremap <leader>~ :Files ~<CR>
-nnoremap <leader>f :Rg<CR>
-nnoremap <leader>b :Buffer<CR>
-nnoremap <leader>l :ALEToggle<CR>
-nnoremap <leader>/ :BLines<CR>
-noremap <leader>s :OverCommandLine<CR>
-nnoremap <leader>S :UltiSnipsEdit<CR>
-nnoremap <leader>q :wq!a<CR>
-"
-"conflicted with ultisnip
-"nnoremap <TAB> gt
-"nnoremap <S-TAB> gT
-noremap <silent> <leader>n :noh<return>
-
-noremap <C-x>; <ESC>:
-nnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r><c-w>').'<CR>'
-vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
-nnoremap <silent> <F9> :so ~/.vimrc<CR>
-
 colorscheme monokai
 
-au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
-au BufRead,BufNewFile *.html.tera set filetype=htmljinja
-au FileType yaml setlocal ts=2 sts=2 sw=2 et
-au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
-au FileType go nnoremap <buffer> <F8> :GoRun<CR>
 " Command for git grep
 " - fzf#vim#grep(command, with_column, [options], [fullscreen])
 command! -bang -nargs=* Hg
@@ -99,6 +71,9 @@ command! -bang -nargs=* Rg
 " Show trailing white spaces
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
+
+" VARIABLES
+" ---------
 
 " Indent php switch statements
 let g:PHP_vintage_case_default_indent = 1
@@ -191,3 +166,36 @@ function! AnsibleExecuteFile(file) abort
     execute "!".command
 endfunction
 command! AnsibleExecuteFile :call AnsibleExecuteFile(expand("%"))
+
+" KEYBINDS
+" --------
+let mapleader=' '
+nnoremap <leader>v :e! ~/.vimrc<CR>
+nnoremap <leader>e :e! %:h<CR>
+nnoremap <leader>p :Files<CR>
+nnoremap <leader>~ :Files ~<CR>
+nnoremap <leader>f :Rg<CR>
+nnoremap <leader>b :Buffer<CR>
+nnoremap <leader>l :ALEToggle<CR>
+nnoremap <leader>/ :BLines<CR>
+noremap <leader>s :OverCommandLine<CR>
+nnoremap <leader>S :UltiSnipsEdit<CR>
+nnoremap <leader>q :wq!a<CR>
+"
+"conflicted with ultisnip
+"nnoremap <TAB> gt
+"nnoremap <S-TAB> gT
+noremap <silent> <leader>n :noh<return>
+
+noremap <C-x>; <ESC>:
+nnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r><c-w>').'<CR>'
+vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
+nnoremap <silent> <F9> :so ~/.vimrc<CR>
+
+au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
+au BufRead,BufNewFile *.html.tera set filetype=htmljinja
+au FileType yaml setlocal ts=2 sts=2 sw=2 et
+au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
+au FileType go nnoremap <buffer> <F8> :GoRun<CR>
+au FileType yaml.ansible vnoremap <buffer> <F7> <ESC>:AnsibleExecuteTask<CR>
+au FileType yaml.ansible nnoremap <buffer> <F8> :AnsibleExecuteFile<CR>
