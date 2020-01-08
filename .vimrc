@@ -158,6 +158,12 @@ if v:version >= 700
 endif
 
 let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE -i inventory/test_hosts -e @answers-2019120317.yml sms"
+" Executes the selected text as an ansible task. The command
+" is gathered from g:ansible_execute_task_command. The responsibity
+" of selecting the right amout of text is to the user, the selected
+" text is copied to a temporary file and g:ansible_exexute_task_command
+" is executed by replacing $FILE substring by the temporary file created
+" before.
 function! AnsibleExecuteTask() range abort
     silent! normal gvy
     let tempname = tempname()
