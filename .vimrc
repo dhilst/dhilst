@@ -181,4 +181,12 @@ function! AnsibleExecuteTask() range abort
 endfunction
 command! -range AnsibleExecuteTask :call AnsibleExecuteTask()
 
+" Executes the current file by replacing $FILE in
+" g:ansible_execute_task_command to the current opened
+" buffer
+function! AnsibleExecuteFile(file) abort
+    let command = substitute(g:ansible_execute_task_command, "$FILE", a:file, "")
+    execute "!".command
+endfunction
+command! AnsibleExecuteFile :call AnsibleExecuteFile(expand("%"))
 
