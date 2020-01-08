@@ -109,6 +109,10 @@ let g:ale_fixers = {
       \ 'rust': ['rustfmt'],
       \ }
 
+" ansible stuff
+let g:ansible_answers = "answers-2019120317.yml"
+let g:ansible_execute_task_command = "ansible-playbook test/include_tasks.yaml -e file=$FILE -e @".g:ansible_answers
+let g:ansible_execute_playbook_command = "ansible-playbook $FILE -i inventory/test_hosts -e @".g:ansible_answers
 
 " Keep buffer position when switching buffers https://stackoverflow.com/questions/4251533/vim-keep-window-position-when-switching-buffers
 if v:version >= 700
@@ -134,8 +138,6 @@ endfunction
 xnoremap <C-y> :call Yank()<CR>
 
 
-let g:ansible_answers = "answers-2019120317.yml"
-let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE -i inventory/test_hosts -e @".g:ansible_answers."sms"
 " Executes the selected text as an ansible task. The command
 " is gathered from g:ansible_execute_task_command. The responsibity
 " of selecting the right amout of text is to the user, the selected
@@ -167,6 +169,12 @@ function! AnsibleExecuteFile(file) abort
     execute "!".command
 endfunction
 command! AnsibleExecuteFile :call AnsibleExecuteFile(expand("%"))
+
+function! AnsibleExecutePlaybook(playbook) abort
+    let command = substitute(g:ansible_execute_playbook_command, "$FILE", a:playbook, "")
+    execute "!".command
+endfunction
+command! AnsibleExecutePlaybook :call AnsibleExecutePlaybook(expand("%"))
 
 " KEYBINDS
 " --------
@@ -200,4 +208,4 @@ au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 au FileType go nnoremap <buffer> <F8> :GoRun<CR>
 au FileType yaml.ansible vnoremap <buffer> <F7> <ESC>:AnsibleExecuteTask<CR>
 au FileType yaml.ansible nnoremap <buffer> <F8> :AnsibleExecuteFile<CR>
-au FileType yaml nnoremap <buffer> <expr> <F9> ":!ansible-playbook ".expand("%")." -i inventory/test_hosts -e @".g:ansible_answers."<CR>"
+au FileType yaml nnoremap <buffer> <F9> :AnsibleExecutePlaybook<CR>
