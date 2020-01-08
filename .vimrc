@@ -111,8 +111,8 @@ let g:ale_fixers = {
 
 " ansible stuff
 let g:ansible_answers = "answers-2019120317.yml"
-let g:ansible_execute_task_command = "ansible-playbook test/include_tasks.yaml -e file=$FILE -e @".g:ansible_answers
-let g:ansible_execute_playbook_command = "ansible-playbook $FILE -i inventory/test_hosts -e @".g:ansible_answers
+let g:ansible_execute_task_command = "ansible-playbook -vvv test/include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers
+let g:ansible_execute_playbook_command = "ansible-playbook -vv $FILE -i inventory/test_hosts -e @".g:ansible_answers
 
 " Keep buffer position when switching buffers https://stackoverflow.com/questions/4251533/vim-keep-window-position-when-switching-buffers
 if v:version >= 700
@@ -170,6 +170,7 @@ function! AnsibleExecuteFile(file) abort
 endfunction
 command! AnsibleExecuteFile :call AnsibleExecuteFile(expand("%"))
 
+" Executes the opened playbook
 function! AnsibleExecutePlaybook(playbook) abort
     let command = substitute(g:ansible_execute_playbook_command, "$FILE", a:playbook, "")
     execute "!".command
@@ -206,6 +207,6 @@ au BufRead,BufNewFile *.html.tera set filetype=htmljinja
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 au FileType go nnoremap <buffer> <F8> :GoRun<CR>
-au FileType yaml.ansible vnoremap <buffer> <F7> <ESC>:AnsibleExecuteTask<CR>
+au FileType yaml,yaml.ansible vnoremap <buffer> <F7> <ESC>:AnsibleExecuteTask<CR>
 au FileType yaml.ansible nnoremap <buffer> <F8> :AnsibleExecuteFile<CR>
 au FileType yaml nnoremap <buffer> <F9> :AnsibleExecutePlaybook<CR>
