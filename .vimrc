@@ -54,20 +54,20 @@ colorscheme monokai
 " Command for git grep
 " - fzf#vim#grep(command, with_column, [options], [fullscreen])
 command! -bang -nargs=* Hg
-  \ call fzf#vim#grep(
-  \   'hrep '.shellescape(<q-args>).' .', 0,
-  \   {}, <bang>0)
+      \ call fzf#vim#grep(
+      \   'hrep '.shellescape(<q-args>).' .', 0,
+      \   {}, <bang>0)
 
 
 command! -bang -nargs=* Og
-  \ call fzf#vim#grep(
-  \   'ogrepcomplex '.shellescape(<q-args>).' .', 0,
-  \   {}, <bang>0)
+      \ call fzf#vim#grep(
+      \   'ogrepcomplex '.shellescape(<q-args>).' .', 0,
+      \   {}, <bang>0)
 
 command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   '/home/dhilst/code/rust/foo/target/release/rgrep . '.shellescape(<q-args>), 0,
-  \   {}, <bang>0)
+      \ call fzf#vim#grep(
+      \   '/home/dhilst/code/rust/foo/target/release/rgrep . '.shellescape(<q-args>), 0,
+      \   {}, <bang>0)
 "
 " Show trailing white spaces
 highlight ExtraWhitespace ctermbg=red guibg=red
@@ -97,10 +97,10 @@ let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
 
 
 let g:ale_linters = {
-            \   'php': ['php'],
-            \   'python': ['pylint', 'mypy'],
-            \   'rust': ['cargo', 'rls', 'rustc'],
-            \ }
+      \   'php': ['php'],
+      \   'python': ['pylint', 'mypy'],
+      \   'rust': ['cargo', 'rls', 'rustc'],
+      \ }
 
 
 let g:ale_fix_on_save = 1
@@ -152,23 +152,23 @@ endfunc
 command! -nargs=1 Fcmd :call s:fcmd(<args>)
 
 function! DHUpdateDotFiles()
-    echom 'Updating configs ...'
-    call s:interm("git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master")
+  echom 'Updating configs ...'
+  call s:interm("git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master")
 endfunction
 Fcmd "DHUpdateDotFiles"
 
 " Workarround for bug in gnome-terminal
 function! Yank() range
-    silent! normal gvy
-    silent! execute "!echo " . shellescape(@", 1) . " | xsel -b"
-    redraw!
+  silent! normal gvy
+  silent! execute "!echo " . shellescape(@", 1) . " | xsel -b"
+  redraw!
 endfunction
 xnoremap <C-y> :call Yank()<CR>
 
 function! OpenUrlRange() range abort
-    silent! normal gvy
-    silent! execute "!firefox ".shellescape(@", 1)
-    redraw!
+  silent! normal gvy
+  silent! execute "!firefox ".shellescape(@", 1)
+  redraw!
 endfunc
 Fcmd "OpenUrlRange"
 
@@ -181,13 +181,40 @@ endfunc
 Fcmd "OpenUrlLine"
 
 function! OpenPlugin() abort
-    let line = getline(".")
-    let match = matchlist(line, 'Plug '."'".'\(.\{-\}\)'."'")
-    if match[0] != "" && match[1] != ""
-      silent! execute "!firefox https://github.com/".match[1]
-    endif
+  let line = getline(".")
+  let match = matchlist(line, 'Plug '."'".'\(.\{-\}\)'."'")
+  if match[0] != "" && match[1] != ""
+    silent! execute "!firefox https://github.com/".match[1]
+  endif
 endfunc
 Fcmd "OpenPlugin"
+
+func s:matchall(text, pattern) abort
+  let count = 0
+  let matches = []
+  while 1
+    let result = matchstr(a:text, a:pattern, 0, count)
+    if result == ""
+      break
+    endif
+    call add(matches, result)
+    let count = count + 1
+  endwhile
+  return matches
+endfunc
+
+function! OpenJiraTicketLine() abort
+  let line = getline(".")
+  let projects = "OPENCATTUS VXCAT"
+  let keys = split(projects, " ")
+  for k in keys
+    for m in s:matchall(line, k.'-\d\+')
+      echo "Match! ".m
+      execute "!firefox https://jira.versatushpc.com.br/browse/".m
+    endfor
+  endfor
+endfunc
+Fcmd "OpenJiraTicketLine"
 
 " --------
 " KEYBINDS
