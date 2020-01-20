@@ -29,6 +29,7 @@ Plug 'psf/black'
 Plug 'sheerun/vim-polyglot'
 Plug 'mattn/webapi-vim'
 Plug 'mitsuhiko/vim-jinja'
+Plug 'dhilst/vim-ansible-execute-task'
 call plug#end()
 
 "set clipboard=unnamedplus
@@ -110,9 +111,26 @@ let g:ale_fixers = {
       \ }
 
 " ansible stuff
+func! s:AnsibleAnswerInCurrentFolder()
+  let files = []
+  for file in glob("answers-*.yaml", v:false, v:true)
+    try
+      if match(file, 'answers-\d\+\.yaml') != -1
+        call add(files, file)
+      end
+    catch /list index out of range/
+    endtry
+  endfor
+  try
+    return reverse(sort(files))[0]
+  catch /list index out of range/
+    return "answers_file_not_found"
+  endtry
+endfunc
 let g:ansible_answers = "answers-2019120317.yml"
-let g:ansible_execute_task_command = "ansible-playbook -vv test/include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers
-let g:ansible_execute_playbook_command = "ansible-playbook -vv $FILE -i inventory/test_hosts -e @".g:ansible_answers
+" let g:ansible_execute_task_command = "ansible-playbook -v include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".s:AnsibleAnswerInCurrentFolder()
+let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE localhost"
+let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts -e @".s:AnsibleAnswerInCurrentFolder()
 
 " Keep buffer position when switching buffers https://stackoverflow.com/questions/4251533/vim-keep-window-position-when-switching-buffers
 if v:version >= 700
@@ -127,7 +145,7 @@ function! DHUpdateDotFiles()
     redraw!
 endfunction
 
-command! DHUpdateDotFiles :call DHUpdateDotFiles()<CR
+command! DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
 
 " Workarround for bug in gnome-terminal
 function! Yank() range
@@ -137,46 +155,31 @@ function! Yank() range
 endfunction
 xnoremap <C-y> :call Yank()<CR>
 
-
-" Executes the selected text as an ansible task. The command
-" is gathered from g:ansible_execute_task_command. The responsibity
-" of selecting the right amout of text is to the user, the selected
-" text is copied to a temporary file and g:ansible_exexute_task_command
-" is executed by replacing $FILE substring by the temporary file created
-" before.
-function! AnsibleExecuteTask() range abort
+function! OpenUrlRange() range abort
     silent! normal gvy
-    let tempname = tempname()
-    let lines = split(@", '\n')
-    let res = writefile(lines, tempname)
-    if res == -1
-      throw "writefile failed " . tempname
+    silent! execute "!firefox ".shellescape(@", 1)
+    redraw!
+endfunc
+command! OpenUrlRange :call OpenUrlRange()<CR>
+
+function! OpenUrlLine() abort
+  let link = matchstr(getline("."), 'https\?://\S*')
+  if link != ""
+    silent! execute "!firefox ".link
+  end
+endfunc
+command! OpenUrlLine :call OpenUrlLine()<CR>
+
+function! OpenPlugin() abort
+    let line = getline(".")
+    let match = matchlist(line, 'Plug '."'".'\(.\{-\}\)'."'")
+    if match[0] != "" && match[1] != ""
+      silent! execute "!firefox https://github.com/".match[1]
     endif
-    let command = substitute(g:ansible_execute_task_command, "$FILE", tempname, "")
-    try
-      execute "!".command
-    finally
-      silent! execute "!rm -f ".tempname
-    endtry
-endfunction
-command! -range AnsibleExecuteTask :call AnsibleExecuteTask()
+endfunc
+command! OpenPlugin :call OpenPlugin()
 
-" Executes the current file by replacing $FILE in
-" g:ansible_execute_task_command to the current opened
-" buffer
-function! AnsibleExecuteFile(file) abort
-    let command = substitute(g:ansible_execute_task_command, "$FILE", a:file, "")
-    execute "!".command
-endfunction
-command! AnsibleExecuteFile :call AnsibleExecuteFile(expand("%:p"))
-
-" Executes the opened playbook
-function! AnsibleExecutePlaybook(playbook) abort
-    let command = substitute(g:ansible_execute_playbook_command, "$FILE", a:playbook, "")
-    execute "!".command
-endfunction
-command! AnsibleExecutePlaybook :call AnsibleExecutePlaybook(expand("%"))
-
+" --------
 " KEYBINDS
 " --------
 let mapleader=' '
@@ -206,7 +209,8 @@ au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.html.tera set filetype=htmljinja
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
-au FileType go nnoremap <buffer> <F8> :GoRun<CR>
-au FileType yaml,yaml.ansible vnoremap <buffer> <F7> <ESC>:AnsibleExecuteTask<CR>
-au FileType yaml.ansible nnoremap <buffer> <F8> :AnsibleExecuteFile<CR>
-au FileType yaml nnoremap <buffer> <F9> :AnsibleExecutePlaybook<CR>
+au FileType go nnoremap <buffer> <F8> :GoBuild<CR>
+
+au FileType yaml,yaml.ansible vmap <buffer> <F7> <Plug>AnsibleExecuteTask
+au FileType yaml.ansible      nmap <buffer> <F8> <Plug>AnsibleExecuteFile
+au FileType yaml              nmap <buffer> <F9> <Plug>AnsibleExecutePlaybook
