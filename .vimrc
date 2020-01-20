@@ -139,13 +139,23 @@ if v:version >= 700
 endif
 
 " Handy functions
+func! s:interm(command) abort
+  split
+  wincmd j
+  enew
+  call termopen(a:command)
+endfunc
+
+func! s:fcmd(func) abort
+  execute "command! ".a:func." :call ".a:func."()"
+endfunc
+command! -nargs=1 Fcmd :call s:fcmd(<args>)
+
 function! DHUpdateDotFiles()
     echom 'Updating configs ...'
-    execute "!git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master"
-    redraw!
+    call s:interm("git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master")
 endfunction
-
-command! DHUpdateDotFiles :call DHUpdateDotFiles()<CR>
+Fcmd "DHUpdateDotFiles"
 
 " Workarround for bug in gnome-terminal
 function! Yank() range
@@ -160,7 +170,7 @@ function! OpenUrlRange() range abort
     silent! execute "!firefox ".shellescape(@", 1)
     redraw!
 endfunc
-command! OpenUrlRange :call OpenUrlRange()<CR>
+Fcmd "OpenUrlRange"
 
 function! OpenUrlLine() abort
   let link = matchstr(getline("."), 'https\?://\S*')
@@ -168,7 +178,7 @@ function! OpenUrlLine() abort
     silent! execute "!firefox ".link
   end
 endfunc
-command! OpenUrlLine :call OpenUrlLine()<CR>
+Fcmd "OpenUrlLine"
 
 function! OpenPlugin() abort
     let line = getline(".")
@@ -177,7 +187,7 @@ function! OpenPlugin() abort
       silent! execute "!firefox https://github.com/".match[1]
     endif
 endfunc
-command! OpenPlugin :call OpenPlugin()
+Fcmd "OpenPlugin"
 
 " --------
 " KEYBINDS
