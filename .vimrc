@@ -9,7 +9,6 @@ Plug 'tpope/vim-abolish'
 "Plug 'vsushkov/vim-phpcs'
 "Plug 'tpope/vim-rsi'
 Plug 'scrooloose/nerdtree'
-Plug 'christoomey/vim-tmux-navigator'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
@@ -19,7 +18,7 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'alvan/vim-closetag'
 Plug 'mattn/gist-vim'
 "Plug 'rust-lang/rust.vim'
-Plug 'sapphirecat/php-psr2-vim'
+"Plug 'sapphirecat/php-psr2-vim'
 Plug 'osyo-manga/vim-over'
 Plug 'ervandew/supertab'
 Plug 'Valloric/YouCompleteMe'
@@ -189,8 +188,8 @@ function! OpenPlugin() abort
 endfunc
 Fcmd "OpenPlugin"
 
-func s:matchall(text, pattern) abort
-  let count = 0
+func Matchall(text, pattern) abort
+  let count = 1
   let matches = []
   while 1
     let result = matchstr(a:text, a:pattern, 0, count)
@@ -208,13 +207,13 @@ function! OpenJiraTicketLine() abort
   let projects = "OPENCATTUS VXCAT"
   let keys = split(projects, " ")
   for k in keys
-    for m in s:matchall(line, k.'-\d\+')
-      echo "Match! ".m
+    for m in Matchall(line, k.'-\d\+')
       execute "!firefox https://jira.versatushpc.com.br/browse/".m
     endfor
   endfor
 endfunc
 Fcmd "OpenJiraTicketLine"
+" OPENCATTUS-1234 OPENCATTUS-123
 
 " --------
 " KEYBINDS
@@ -241,6 +240,7 @@ noremap <C-x>; <ESC>:
 nnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r><c-w>').'<CR>'
 vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
 nnoremap <silent> <F9> :so ~/.vimrc<CR>
+nnoremap :%s/ <ESC>:OverCommandLine %s/<CR>
 
 au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.html.tera set filetype=htmljinja
