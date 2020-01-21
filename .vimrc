@@ -44,6 +44,7 @@ set incsearch
 set clipboard=unnamedplus
 set smartcase
 set exrc
+set scrolloff=0 " This fix an annoying bug when running vim inside a terminal inside another vim
 
 filetype plugin on
 filetype plugin indent on
@@ -213,7 +214,7 @@ function! OpenJiraTicketLine() abort
   endfor
 endfunc
 Fcmd "OpenJiraTicketLine"
-" OPENCATTUS-1234 OPENCATTUS-123
+" OPENCATTUS-1 OPENCATTUS-2
 
 " --------
 " KEYBINDS
@@ -251,3 +252,5 @@ au FileType go nnoremap <buffer> <F8> :GoBuild<CR>
 au FileType yaml,yaml.ansible vmap <buffer> <F7> <Plug>AnsibleExecuteTask
 au FileType yaml.ansible      nmap <buffer> <F8> <Plug>AnsibleExecuteFile
 au FileType yaml              nmap <buffer> <F9> <Plug>AnsibleExecutePlaybook
+
+au BufNewFile *.md read ~/.vim/templates/post.md
