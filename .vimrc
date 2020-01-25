@@ -6,13 +6,14 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-scriptease'
 "Plug 'vsushkov/vim-phpcs'
 "Plug 'tpope/vim-rsi'
 Plug 'scrooloose/nerdtree'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
-Plug 'w0rp/ale', { 'on': 'ALEToggle' }
+Plug 'w0rp/ale' ", { 'on': 'ALEToggle' }
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 "Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'alvan/vim-closetag'
@@ -29,22 +30,14 @@ Plug 'sheerun/vim-polyglot'
 Plug 'mattn/webapi-vim'
 Plug 'mitsuhiko/vim-jinja'
 Plug 'dhilst/vim-ansible-execute-task'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'reasonml-editor/vim-reason-plus'
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+Plug 'AndrewRadev/bufferize.vim'
 call plug#end()
-
-"set clipboard=unnamedplus
-set nohls
-set showcmd
-set ls=2
-set backupcopy=yes
-set mouse=a
-set ts=2 sts=2 sw=2 et
-set bg=dark
-set scrolloff=10
-set incsearch
-set clipboard=unnamedplus
-set smartcase
-set exrc
-set scrolloff=0 " This fix an annoying bug when running vim inside a terminal inside another vim
 
 filetype plugin on
 filetype plugin indent on
@@ -100,6 +93,7 @@ let g:ale_linters = {
       \   'php': ['php'],
       \   'python': ['pylint', 'mypy'],
       \   'rust': ['cargo', 'rls', 'rustc'],
+      \   'ocaml': ['merlin', 'ols'],
       \ }
 
 
@@ -108,7 +102,12 @@ let g:ale_fixers = {
       \ 'go': ['gofmt', 'goimports'],
       \ 'python': ['autopep8', 'black'],
       \ 'rust': ['rustfmt'],
+      \ 'ocaml': ['ocamlformat', 'ocp-indent', 'remove_trailing_lines', 'trim_whitespace'],
       \ }
+
+" oCaml stuff
+let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
+execute "set rtp+=" . g:opamshare . "/merlin/vim"
 
 " ansible stuff
 func! s:AnsibleAnswerInCurrentFolder()
@@ -128,10 +127,18 @@ func! s:AnsibleAnswerInCurrentFolder()
   endtry
 endfunc
 let g:ansible_answers = "answers-2019120317.yml"
-" let g:ansible_execute_task_command = "ansible-playbook -v include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".s:AnsibleAnswerInCurrentFolder()
-let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE localhost"
-let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts -e @".s:AnsibleAnswerInCurrentFolder()
+let g:ansible_execute_task_command = "ansible-playbook -v include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @test/answers-simple.yaml"
+"let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE localhost"
+"let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts -e @".s:AnsibleAnswerInCurrentFolder()
+let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE"
 
+" oCaml stuff
+let g:LanguageClient_serverCommands = {
+    \ 'reason': ['/home/dhilst/.local/bin/reason-language-server'],
+    \ }
+
+" enable autocomplete
+let g:deoplete#enable_at_startup = 1
 " Keep buffer position when switching buffers https://stackoverflow.com/questions/4251533/vim-keep-window-position-when-switching-buffers
 if v:version >= 700
   au BufLeave * let b:winview = winsaveview()
@@ -254,3 +261,18 @@ au FileType yaml.ansible      nmap <buffer> <F8> <Plug>AnsibleExecuteFile
 au FileType yaml              nmap <buffer> <F9> <Plug>AnsibleExecutePlaybook
 
 au BufNewFile *.md read ~/.vim/templates/post.md
+
+
+"set clipboard=unnamedplus
+set nohls
+set showcmd
+set ls=2
+set backupcopy=yes
+set mouse=a
+set ts=2 sts=2 sw=2 et
+set bg=dark
+set incsearch
+set clipboard=unnamedplus
+set smartcase
+set exrc
+set scrolloff=0 " This fix an annoying bug when running vim inside a terminal inside another vim
