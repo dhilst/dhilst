@@ -148,16 +148,13 @@ endif
 " Handy functions
 func! s:interm(command) abort
   if bufexists(a:command)
-    let n = bufnr(a:command)
-    let w = win_findbuf(n)
-    if w == []
-      sbuffer n
-    else
-      call win_gotoid(w[0])
-    endif
-  else
-    split a:command
-  endif
+    let bufn = bufnr(a:command)
+    try
+      execute "bdelete ".bufn
+    catch /No buffers were deleted/
+    endtry
+  end
+  split a:command
   call termopen(a:command)
 endfunc
 
