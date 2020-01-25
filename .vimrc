@@ -150,11 +150,11 @@ func! s:interm(command) abort
   if bufexists(a:command)
     let bufn = bufnr(a:command)
     try
-      execute "bdelete ".bufn
+      execute "bdelete! ".bufn
     catch /No buffers were deleted/
     endtry
   end
-  split a:command
+  split! a:command
   call termopen(a:command)
 endfunc
 
