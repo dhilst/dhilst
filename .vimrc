@@ -150,11 +150,13 @@ func! s:interm(command) abort
   if bufexists(a:command)
     let n = bufnr(a:command)
     let w = win_findbuf(n)
-    call win_gotoid(w)
+    if w == []
+      sbuffer n
+    else
+      call win_gotoid(w[0])
+    endif
   else
-    split
-    wincmd j
-    call bufadd(a:command)
+    split a:command
   endif
   call termopen(a:command)
 endfunc
