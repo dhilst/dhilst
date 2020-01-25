@@ -154,7 +154,7 @@ func! s:interm(command) abort
     catch /No buffers were deleted/
     endtry
   end
-  split! a:command
+  split a:command
   call termopen(a:command)
 endfunc
 
