@@ -147,9 +147,15 @@ endif
 
 " Handy functions
 func! s:interm(command) abort
-  split
-  wincmd j
-  enew
+  if bufexists(a:command)
+    let n = bufnr(a:command)
+    let w = win_findbuf(n)
+    call win_gotoid(w)
+  else
+    split
+    wincmd j
+    call bufadd(a:command)
+  endif
   call termopen(a:command)
 endfunc
 
