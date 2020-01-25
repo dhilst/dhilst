@@ -155,6 +155,7 @@ func! s:interm(command) abort
     endtry
   end
   split a:command
+  startinsert
   call termopen(a:command)
 endfunc
 
