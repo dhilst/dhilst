@@ -30,8 +30,8 @@ Plug 'sheerun/vim-polyglot'
 Plug 'mattn/webapi-vim'
 Plug 'mitsuhiko/vim-jinja'
 Plug 'dhilst/vim-ansible-execute-task'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'reasonml-editor/vim-reason-plus'
+"Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+"Plug 'reasonml-editor/vim-reason-plus'
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
@@ -89,6 +89,9 @@ let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjang
 let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
 
 
+let g:ale_reason_ls_executable  = "/home/dhilst/.local/bin/reason-language-server"
+
+
 let g:ale_linters = {
       \   'php': ['php'],
       \   'python': ['pylint', 'mypy'],
@@ -103,6 +106,7 @@ let g:ale_fixers = {
       \ 'python': ['autopep8', 'black'],
       \ 'rust': ['rustfmt'],
       \ 'ocaml': ['ocamlformat', 'ocp-indent', 'remove_trailing_lines', 'trim_whitespace'],
+      \ 'reason': ['rfmt', 'remove_trailing_lines', 'trim_whitespace'],
       \ }
 
 " oCaml stuff
@@ -134,8 +138,9 @@ let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE"
 
 " oCaml stuff
 let g:LanguageClient_serverCommands = {
-    \ 'reason': ['/home/dhilst/.local/bin/reason-language-server'],
+    \ 'reason': ['/home/dhilst/.yarn/bin/ocaml-language-server'],
     \ }
+    "\ 'reason': ['/home/dhilst/.local/bin/reason-language-server'],
 
 " enable autocomplete
 let g:deoplete#enable_at_startup = 1
@@ -238,12 +243,13 @@ nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
 nnoremap <leader>f :Rg<CR>
-nnoremap <leader>b :Buffer<CR>
+nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
 noremap <leader>s :OverCommandLine<CR>
 nnoremap <leader>S :UltiSnipsEdit<CR>
 nnoremap <leader>q :wq!a<CR>
+
 "
 "conflicted with ultisnip
 "nnoremap <TAB> gt
@@ -256,6 +262,18 @@ vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
 nnoremap <silent> <F9> :so ~/.vimrc<CR>
 nnoremap :%s/ <ESC>:OverCommandLine %s/<CR>
 
+
+
+" movement 
+noremap <C-j> <ESC>:wincmd j<CR>
+noremap <C-h> <ESC>:wincmd h<CR>
+noremap <C-k> <ESC>:wincmd k<CR>
+noremap <C-l> <ESC>:wincmd l<CR>
+
+
+
+
+"au BufWritePre *.re,*.rei call LanguageClient#textDocument_formatting_sync()
 au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.html.tera set filetype=htmljinja
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
@@ -267,6 +285,9 @@ au FileType yaml.ansible      nmap <buffer> <F8> <Plug>AnsibleExecuteFile
 au FileType yaml              nmap <buffer> <F9> <Plug>AnsibleExecutePlaybook
 
 au BufNewFile *.md read ~/.vim/templates/post.md
+"auto format for the lazy
+au FileType javascript au BufWritePre <buffer> normal gg=G``
+
 
 
 "set clipboard=unnamedplus
