@@ -32,10 +32,10 @@ Plug 'mitsuhiko/vim-jinja'
 Plug 'dhilst/vim-ansible-execute-task'
 "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 "Plug 'reasonml-editor/vim-reason-plus'
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
+"Plug 'autozimu/LanguageClient-neovim', {
+"    \ 'branch': 'next',
+"    \ 'do': 'bash install.sh',
+"    \ }
 Plug 'AndrewRadev/bufferize.vim'
 call plug#end()
 
@@ -106,12 +106,12 @@ let g:ale_fixers = {
       \ 'python': ['autopep8', 'black'],
       \ 'rust': ['rustfmt'],
       \ 'ocaml': ['ocamlformat', 'ocp-indent', 'remove_trailing_lines', 'trim_whitespace'],
-      \ 'reason': ['rfmt', 'remove_trailing_lines', 'trim_whitespace'],
+      \ 'reason': ['refmt', 'remove_trailing_lines', 'trim_whitespace'],
       \ }
 
 " oCaml stuff
-let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
-execute "set rtp+=" . g:opamshare . "/merlin/vim"
+" let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
+" execute "set rtp+=" . g:opamshare . "/merlin/vim"
 
 " ansible stuff
 func! s:AnsibleAnswerInCurrentFolder()
@@ -130,11 +130,11 @@ func! s:AnsibleAnswerInCurrentFolder()
     return "answers_file_not_found"
   endtry
 endfunc
-let g:ansible_answers = "answers-2019120317.yml"
-let g:ansible_execute_task_command = "ansible-playbook -v include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @test/answers-simple.yaml"
+let g:ansible_answers = "test/answers-simple.yaml"
+let g:ansible_execute_task_command = "ansible-playbook -v include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers
 "let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE localhost"
-"let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts -e @".s:AnsibleAnswerInCurrentFolder()
-let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE"
+let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts -e @".g:ansible_answers
+"let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE"
 
 " oCaml stuff
 let g:LanguageClient_serverCommands = {
