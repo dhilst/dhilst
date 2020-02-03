@@ -1,3 +1,7 @@
+if !filereadable($HOME."/.vim/autoload/plug.vim")
+  execute "!curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+endif
+
 call plug#begin('~/.vim/plugged')
 Plug 'crusoexia/vim-monokai'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -14,10 +18,11 @@ Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'w0rp/ale', { 'on': 'ALEToggle' }
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+"Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 "Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'alvan/vim-closetag'
 Plug 'mattn/gist-vim'
+Plug 'tpope/vim-obsession'
 "Plug 'rust-lang/rust.vim'
 "Plug 'sapphirecat/php-psr2-vim'
 Plug 'osyo-manga/vim-over'
@@ -68,6 +73,11 @@ match ExtraWhitespace /\s\+$/
 
 " VARIABLES
 " ---------
+"
+"let g:python_host_prog = "/usr/bin/python2"
+let g:python3_host_prog = "/home/dhilst/.nvim-venv/bin/python3"
+let g:ale_python_pylint_options = "--init-hook='import sys; sys.path.append(\"./\")'"
+
 
 " Indent php switch statements
 let g:PHP_vintage_case_default_indent = 1
@@ -94,7 +104,7 @@ let g:ale_reason_ls_executable  = "/home/dhilst/.local/bin/reason-language-serve
 
 let g:ale_linters = {
       \   'php': ['php'],
-      \   'python': ['pylint', 'mypy'],
+      \   'python': ['mypy'],
       \   'rust': ['cargo', 'rls', 'rustc'],
       \   'ocaml': ['merlin', 'ols'],
       \ }
@@ -131,7 +141,7 @@ func! s:AnsibleAnswerInCurrentFolder()
   endtry
 endfunc
 let g:ansible_answers = "test/answers-simple.yaml"
-let g:ansible_execute_task_command = "ansible-playbook -v include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers
+let g:ansible_execute_task_command = "ansible-playbook -v include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers." --limit 172.21.1.68"
 "let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE localhost"
 let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts -e @".g:ansible_answers
 "let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE"
@@ -192,8 +202,9 @@ Fcmd "OpenUrlRange"
 
 function! OpenUrlLine() abort
   let link = matchstr(getline("."), 'https\?://\S*')
+  echo link
   if link != ""
-    silent! execute "!firefox ".link
+    execute "!firefox ".shellescape(link, 1)
   end
 endfunc
 Fcmd "OpenUrlLine"
@@ -206,6 +217,20 @@ function! OpenPlugin() abort
   endif
 endfunc
 Fcmd "OpenPlugin"
+
+func! Pprint() range
+  normal gvc
+python3 <<EOF
+import vim
+from pprint import pformat
+text = pformat(eval(vim.eval('@"')))
+vim.command(f"let text = {repr(text)}")
+EOF
+  echo text
+  call setreg('"', text) 
+  put "
+  normal kdd
+endfunc
 
 func Matchall(text, pattern) abort
   let count = 1
@@ -249,6 +274,8 @@ nnoremap <leader>/ :BLines<CR>
 noremap <leader>s :OverCommandLine<CR>
 nnoremap <leader>S :UltiSnipsEdit<CR>
 nnoremap <leader>q :wq!a<CR>
+noremap <leader>n :ALENextWrap<CR>
+
 
 "
 "conflicted with ultisnip
@@ -287,6 +314,8 @@ au FileType yaml              nmap <buffer> <F9> <Plug>AnsibleExecutePlaybook
 au BufNewFile *.md read ~/.vim/templates/post.md
 "auto format for the lazy
 au FileType javascript au BufWritePre <buffer> normal gg=G``
+au FileType python noremap <buffer> <F8> :!python3 -m doctest %<CR>
+au FileType python noremap <buffer> <F9> :!python3 %<CR>
 
 
 
