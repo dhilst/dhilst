@@ -43,6 +43,7 @@ Plug 'dhilst/vim-ansible-execute-task'
 "    \ }
 Plug 'AndrewRadev/bufferize.vim'
 Plug 'farmergreg/vim-lastplace'
+Plug 'lambdalisue/doctest.vim'
 call plug#end()
 
 filetype plugin on
@@ -65,7 +66,7 @@ command! -bang -nargs=* Og
 
 command! -bang -nargs=* Rg
       \ call fzf#vim#grep(
-      \   '/home/dhilst/code/rust/foo/target/release/rgrep . '.shellescape(<q-args>), 0,
+      \   '/home/dhilst/code/rgrep/target/release/rgrep .'.shellescape(<q-args>), 0,
       \   {}, <bang>0)
 "
 " Show trailing white spaces
@@ -142,7 +143,7 @@ func! s:AnsibleAnswerInCurrentFolder()
   endtry
 endfunc
 let g:ansible_answers = "test/answers-simple.yaml"
-let g:ansible_execute_task_command = "ansible-playbook -v include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers." --limit 172.21.1.68"
+let g:ansible_execute_task_command = "ansible-playbook -v test/include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers." --limit ansible-test1"
 "let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE localhost"
 let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts -e @".g:ansible_answers
 "let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE"
@@ -176,7 +177,7 @@ func! s:interm(command) abort
   end
   split a:command
   startinsert
-  call termopen(a:command)
+  call termopen("zsh -c ".a:command)
 endfunc
 
 func! s:fcmd(func) abort
@@ -268,6 +269,7 @@ Fcmd "OpenJiraTicketLine"
 " KEYBINDS
 " --------
 let mapleader=' '
+nnoremap <C-q> :wqa!
 nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
@@ -319,7 +321,7 @@ au FileType yaml              nmap <buffer> <F9> <Plug>AnsibleExecutePlaybook
 au BufNewFile *.md read ~/.vim/templates/post.md
 "auto format for the lazy
 au FileType javascript au BufWritePre <buffer> normal gg=G``
-au FileType python noremap <buffer> <F8> :!python3 -m doctest %<CR>
+au FileType python noremap <buffer> <F8> :Doctest -o ELLIPSIS<CR>
 au FileType python noremap <buffer> <F9> :!python3 %<CR>
 
 
