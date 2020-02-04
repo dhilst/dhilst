@@ -42,6 +42,7 @@ Plug 'dhilst/vim-ansible-execute-task'
 "    \ 'do': 'bash install.sh',
 "    \ }
 Plug 'AndrewRadev/bufferize.vim'
+Plug 'farmergreg/vim-lastplace'
 call plug#end()
 
 filetype plugin on
@@ -161,6 +162,10 @@ if v:version >= 700
 endif
 
 " Handy functions
+func! RandString(n) abort
+  return system("openssl rand -base64 ".a:n)
+endfunc
+
 func! s:interm(command) abort
   if bufexists(a:command)
     let bufn = bufnr(a:command)
