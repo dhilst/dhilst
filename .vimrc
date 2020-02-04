@@ -142,11 +142,9 @@ func! s:AnsibleAnswerInCurrentFolder()
     return "answers_file_not_found"
   endtry
 endfunc
-let g:ansible_answers = "test/answers-simple.yaml"
+let g:ansible_answers = "test/answers-simple.yaml -e @test/answers-slurm.yaml"
 let g:ansible_execute_task_command = "ansible-playbook -v test/include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers." --limit ansible-test1"
-"let g:ansible_execute_task_command = "ansible -m include_tasks -a $FILE localhost"
-let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts -e @".g:ansible_answers
-"let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE"
+let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts --limit ansible-test1 -e @".g:ansible_answers
 
 " oCaml stuff
 let g:LanguageClient_serverCommands = {
@@ -177,7 +175,7 @@ func! s:interm(command) abort
   end
   split a:command
   startinsert
-  call termopen("zsh -lc '".a:command."'")
+  call termopen(a:command)
 endfunc
 
 func! s:fcmd(func) abort
@@ -252,6 +250,12 @@ func Matchall(text, pattern) abort
   return matches
 endfunc
 
+function! OpenBitbucketBranch() abort
+  let branch = trim(getline("."))
+  echo branch
+  execute "!firefox ".shellescape("https://bitbucket.versatushpc.com.br/projects/OPENCATTUS/repos/deployment/browse?at=refs/heads/".branch, 1)
+endfunc
+
 function! OpenJiraTicketLine() abort
   let line = getline(".")
   let projects = "OPENCATTUS VXCAT"
@@ -282,6 +286,7 @@ noremap <leader>s :OverCommandLine<CR>
 nnoremap <leader>S :UltiSnipsEdit<CR>
 nnoremap <leader>q :wq!a<CR>
 noremap <leader>n :ALENextWrap<CR>
+noremap <C-w><C-w> :w!<CR>
 
 
 "
