@@ -177,7 +177,7 @@ func! s:interm(command) abort
   end
   split a:command
   startinsert
-  call termopen("zsh -c '".a:command."'")
+  call termopen("zsh -lc '".a:command."'")
 endfunc
 
 func! s:fcmd(func) abort
