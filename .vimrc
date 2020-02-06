@@ -112,6 +112,7 @@ let g:ale_linters = {
       \ }
 
 
+let g:ale_linters_explicit = 1
 let g:ale_fix_on_save = 1
 let g:ale_fixers = {
       \ 'go': ['gofmt', 'goimports'],
@@ -119,6 +120,8 @@ let g:ale_fixers = {
       \ 'rust': ['rustfmt'],
       \ 'ocaml': ['ocamlformat', 'ocp-indent', 'remove_trailing_lines', 'trim_whitespace'],
       \ 'reason': ['refmt', 'remove_trailing_lines', 'trim_whitespace'],
+      \ 'javascript': ['prettier'],
+      \ 'css': ['prettier'],
       \ }
 
 " oCaml stuff
