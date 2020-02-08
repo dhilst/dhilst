@@ -170,20 +170,15 @@ func! RandString(n) abort
   return system("openssl rand -base64 ".a:n)
 endfunc
 
-func! s:findbuf(bufpat) abort
+func! Findbuf(bufpat) abort
   echo "Search for ".a:bufpat
   redir @o
   silent! ls
   redir END
   let buffers = split(@o, "\n")
   call map(buffers, {_, val -> split(val, '\s\+')})
-  let ids = map(copy(buffers), {_, val -> val[0]})
-  let names = map(copy(buffers), {_, val -> val[2]})
-  let idx = match(names, a:bufpat)
-  if idx == -1
-    return -1
-  endif
-  return idx[idx]
+  call map(buffers, {_, val -> [val[0], val[1]})
+  echo buffers
 endfunc
 
 func! s:interm(command) abort
