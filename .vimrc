@@ -109,6 +109,7 @@ let g:ale_linters = {
       \   'python': ['mypy'],
       \   'rust': ['cargo', 'rls', 'rustc'],
       \   'ocaml': ['merlin', 'ols'],
+      \   'typescript': ['eslint', 'standard', 'tslint', 'tsserver', 'typecheck', 'xo'],
       \ }
 
 
@@ -121,6 +122,7 @@ let g:ale_fixers = {
       \ 'ocaml': ['ocamlformat', 'ocp-indent', 'remove_trailing_lines', 'trim_whitespace'],
       \ 'reason': ['refmt', 'remove_trailing_lines', 'trim_whitespace'],
       \ 'javascript': ['prettier'],
+      \ 'typescript': ['prettier'],
       \ 'css': ['prettier'],
       \ }
 
@@ -276,12 +278,13 @@ Fcmd "OpenJiraTicketLine"
 " KEYBINDS
 " --------
 let mapleader=' '
-nnoremap <C-q> :wqa!
+nnoremap <C-q><C-q> :q!<CR>
+nnoremap <C-w><C-q> :wqa!<CR>
 nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
-nnoremap <leader>f :Rg<CR>
+nnoremap <leader>f :Ag<CR>
 nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
@@ -290,18 +293,17 @@ nnoremap <leader>S :UltiSnipsEdit<CR>
 nnoremap <leader>q :wq!a<CR>
 noremap <leader>n :ALENextWrap<CR>
 noremap <C-w><C-w> :w!<CR>
+inoremap <C-a> ^
 
 
 "
 "conflicted with ultisnip
 "nnoremap <TAB> gt
 "nnoremap <S-TAB> gT
-noremap <silent> <leader>n :noh<return>
 
 noremap <C-x>; <ESC>:
 nnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r><c-w>').'<CR>'
 vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
-nnoremap <silent> <F9> :so ~/.vimrc<CR>
 nnoremap :%s/ <ESC>:OverCommandLine %s/<CR>
 
 
@@ -325,6 +327,7 @@ au FileType go nnoremap <buffer> <F8> :GoBuild<CR>
 au FileType yaml,yaml.ansible vmap <buffer> <F7> <Plug>AnsibleExecuteTask
 au FileType yaml.ansible      nmap <buffer> <F8> <Plug>AnsibleExecuteFile
 au FileType yaml              nmap <buffer> <F9> <Plug>AnsibleExecutePlaybook
+au FileType vim               nnoremap <buffer> <F9> :so %<CR>
 
 au BufNewFile *.md read ~/.vim/templates/post.md
 "auto format for the lazy
