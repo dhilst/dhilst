@@ -176,13 +176,25 @@ func! Findbuf(bufpat) abort
   silent! ls
   redir END
   let buffers = split(@o, "\n")
-  call map(buffers, {_, val -> split(val, '\s\+')})
-  call map(buffers, {_, val -> [val[0], val[1]})
-  echo buffers
+  let found = -1
+python3 <<EOF
+import re
+from shlex import split as shsplit
+
+bufpat = vim.eval("a:bufpat")
+buffers = vim.eval("buffers")
+buffers = map(shsplit, buffers)
+buffers = [(v[0], v[2]) for v in buffers]
+for id_, name  in buffers:
+  if re.search(bufpat, name) is not None:
+    vim.command(f"let found = {id_}")
+    break
+EOF
+  return found
 endfunc
 
 func! s:interm(command) abort
-  let bufid = s:findbuf(a:command)
+  let bufid = Findbuf(a:command)
   if  bufid == -1
     split a:command
     startinsert
