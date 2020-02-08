@@ -170,18 +170,36 @@ func! RandString(n) abort
   return system("openssl rand -base64 ".a:n)
 endfunc
 
+func! s:findbuf(bufpat) abort
+  echom "Search for ".a:bufpat
+  redir @o
+  silent! ls
+  redir END
+  let buffers = split(@o, "\n")
+  call map(buffers, {_, val -> split(val, '\s\+')})
+  let ids = map(copy(buffers), {_, val -> val[0]})
+  let names = map(copy(buffers), {_, val -> val[2]})
+  let idx = match(names, a:bufpat)
+  if idx == -1
+    return -1
+  endif
+  return idx[idx]
+endfunc
+
 func! s:interm(command) abort
-  if bufexists(a:command)
-    let bufn = bufnr(a:command)
+  let bufid = s:findbuf(a:command)
+  if  bufid == -1
+    split a:command
+    startinsert
+    call termopen(a:command)
+  else
     try
-      execute "bdelete! ".bufn
+      execute "bdelete! ".bufid
     catch /No buffers were deleted/
     endtry
-  end
-  split a:command
-  startinsert
-  call termopen(a:command)
+  endif
 endfunc
+
 
 func! s:fcmd(func) abort
   execute "command! ".a:func." :call ".a:func."()"
