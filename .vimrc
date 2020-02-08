@@ -171,6 +171,7 @@ func! RandString(n) abort
 endfunc
 
 func! s:findbuf(bufpat) abort
+  echo "Search for ".a:bufpat
   redir @o
   silent! ls
   redir END
