@@ -195,7 +195,7 @@ endfunc
 
 func! s:interm(command) abort
   let bufid = Findbuf(a:command)
-  if ! bufid == -1
+  if bufid != -1
     try
       execute "bdelete! ".bufid
     catch /No buffers were deleted/
