@@ -11,6 +11,7 @@ Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-scriptease'
+Plug 'tpope/vim-dispatch'
 "Plug 'vsushkov/vim-phpcs'
 "Plug 'tpope/vim-rsi'
 Plug 'scrooloose/nerdtree'
@@ -44,6 +45,7 @@ Plug 'dhilst/vim-ansible-execute-task'
 Plug 'AndrewRadev/bufferize.vim'
 Plug 'farmergreg/vim-lastplace'
 Plug 'lambdalisue/doctest.vim'
+Plug 'jez/vim-better-sml'
 call plug#end()
 
 filetype plugin on
@@ -66,7 +68,7 @@ command! -bang -nargs=* Og
 
 command! -bang -nargs=* Rg
       \ call fzf#vim#grep(
-      \   '/home/dhilst/code/rgrep/target/release/rgrep .'.shellescape(<q-args>), 0,
+      \   '/home/dhilst/.cargo/bin/gkpgrep .'.shellescape(<q-args>), 0,
       \   {}, <bang>0)
 "
 " Show trailing white spaces
@@ -79,6 +81,8 @@ match ExtraWhitespace /\s\+$/
 "let g:python_host_prog = "/usr/bin/python2"
 let g:python3_host_prog = "/home/dhilst/.nvim-venv/bin/python3"
 let g:ale_python_pylint_options = "--init-hook='import sys; sys.path.append(\"./\")'"
+let g:sml_auto_create_def_use = "always"
+
 
 
 " Indent php switch statements
@@ -109,6 +113,7 @@ let g:ale_linters = {
       \   'python': ['mypy'],
       \   'rust': ['cargo', 'rls', 'rustc'],
       \   'ocaml': ['merlin', 'ols'],
+      \   'reason': ['reason-language-server', 'ols'],
       \   'typescript': ['eslint', 'standard', 'tslint', 'tsserver', 'typecheck', 'xo'],
       \ }
 
@@ -124,6 +129,7 @@ let g:ale_fixers = {
       \ 'javascript': ['prettier'],
       \ 'typescript': ['prettier'],
       \ 'css': ['prettier'],
+      \ 'yaml': ['trim_whitespace'],
       \ }
 
 " oCaml stuff
@@ -307,7 +313,7 @@ nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
-nnoremap <leader>f :Ag<CR>
+nnoremap <leader>f :Rg<CR>
 nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
@@ -357,7 +363,21 @@ au BufNewFile *.md read ~/.vim/templates/post.md
 au FileType javascript au BufWritePre <buffer> normal gg=G``
 au FileType python noremap <buffer> <F8> :Doctest -o ELLIPSIS<CR>
 au FileType python noremap <buffer> <F9> :!python3 %<CR>
+autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+augroup smlMaps
+  au!
+  au FileType sml nnoremap <buffer> <leader>t :SMLTypeQuery<CR>
+  au FileType sml nnoremap <buffer> gd :SMLJumpToDef<CR>
 
+  au FileType sml nnoremap <silent> <buffer> <leader>is :SMLReplStart<CR>
+  au FileType sml nnoremap <silent> <buffer> <leader>ik :SMLReplStop<CR>
+  au FileType sml nnoremap <silent> <buffer> <leader>if :SMLReplBuild<CR>
+  au FileType sml nnoremap <silent> <buffer> <leader>io :SMLReplOpen<CR>
+  au FileType sml nnoremap <silent> <buffer> <leader>iu :SMLReplUse<CR>
+  au FileType sml nnoremap <silent> <buffer> <leader>ic :SMLReplClear<CR>
+  au FileType sml nnoremap <silent> <buffer> <leader>ip :SMLReplPrintDepth<CR>
+  au FileType sml nnoremap <silent> <buffer> <leader>iz :SMLReplShell<CR>
+augroup END
 
 
 "set clipboard=unnamedplus
