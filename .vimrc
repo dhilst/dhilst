@@ -28,7 +28,7 @@ Plug 'tpope/vim-obsession'
 "Plug 'sapphirecat/php-psr2-vim'
 Plug 'osyo-manga/vim-over'
 Plug 'ervandew/supertab'
-Plug 'Valloric/YouCompleteMe'
+"Plug 'Valloric/YouCompleteMe'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'psf/black'
@@ -68,7 +68,7 @@ command! -bang -nargs=* Og
 
 command! -bang -nargs=* Rg
       \ call fzf#vim#grep(
-      \   '/home/dhilst/.cargo/bin/gkpgrep .'.shellescape(<q-args>), 0,
+      \   '/Users/gecko/.cargo/bin/gkosgrep .'.shellescape(<q-args>), 0,
       \   {}, <bang>0)
 "
 " Show trailing white spaces
@@ -83,7 +83,9 @@ let g:python3_host_prog = "/home/dhilst/.nvim-venv/bin/python3"
 let g:ale_python_pylint_options = "--init-hook='import sys; sys.path.append(\"./\")'"
 let g:sml_auto_create_def_use = "always"
 
-
+" macos stuff
+let g:python2_host_prog = '/usr/local/bin/python'
+let g:python3_host_prog = '/usr/local/bin/python3'
 
 " Indent php switch statements
 let g:PHP_vintage_case_default_indent = 1
@@ -111,7 +113,7 @@ let g:ale_reason_ls_executable  = "/home/dhilst/.local/bin/reason-language-serve
 let g:ale_linters = {
       \   'php': ['php'],
       \   'python': ['mypy'],
-      \   'rust': ['cargo', 'rls', 'rustc'],
+      \   'rust': ['rls', 'rustc'],
       \   'ocaml': ['merlin', 'ols'],
       \   'reason': ['reason-language-server', 'ols'],
       \   'typescript': ['eslint', 'standard', 'tslint', 'tsserver', 'typecheck', 'xo'],
@@ -256,6 +258,8 @@ function! OpenPlugin() abort
 endfunc
 Fcmd "OpenPlugin"
 
+" Pretty print a python object selected
+" in visual block
 func! Pprint() range
   normal gvc
 python3 <<EOF
@@ -265,7 +269,7 @@ text = pformat(eval(vim.eval('@"')))
 vim.command(f"let text = {repr(text)}")
 EOF
   echo text
-  call setreg('"', text) 
+  call setreg('"', text)
   put "
   normal kdd
 endfunc
@@ -324,7 +328,6 @@ noremap <leader>n :ALENextWrap<CR>
 noremap <C-w><C-w> :w!<CR>
 inoremap <C-a> ^
 
-
 "
 "conflicted with ultisnip
 "nnoremap <TAB> gt
@@ -335,18 +338,14 @@ nnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r><c-w>').'<CR>'
 vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
 nnoremap :%s/ <ESC>:OverCommandLine %s/<CR>
 
-
-
-" movement 
+" movement
 noremap <C-j> <ESC>:wincmd j<CR>
 noremap <C-h> <ESC>:wincmd h<CR>
 noremap <C-k> <ESC>:wincmd k<CR>
 noremap <C-l> <ESC>:wincmd l<CR>
 
-
-
-
 "au BufWritePre *.re,*.rei call LanguageClient#textDocument_formatting_sync()
+au BufWritePre *.rs :silent! !rustfmt %
 au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.html.tera set filetype=htmljinja
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
@@ -363,6 +362,7 @@ au BufNewFile *.md read ~/.vim/templates/post.md
 au FileType javascript au BufWritePre <buffer> normal gg=G``
 au FileType python noremap <buffer> <F8> :Doctest -o ELLIPSIS<CR>
 au FileType python noremap <buffer> <F9> :!python3 %<CR>
+au FileType rust noremap <buffer> <F8> :make build<CR>
 autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 augroup smlMaps
   au!
@@ -378,7 +378,6 @@ augroup smlMaps
   au FileType sml nnoremap <silent> <buffer> <leader>ip :SMLReplPrintDepth<CR>
   au FileType sml nnoremap <silent> <buffer> <leader>iz :SMLReplShell<CR>
 augroup END
-
 
 "set clipboard=unnamedplus
 set nohls
