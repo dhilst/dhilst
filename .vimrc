@@ -46,7 +46,7 @@ Plug 'AndrewRadev/bufferize.vim'
 Plug 'farmergreg/vim-lastplace'
 Plug 'lambdalisue/doctest.vim'
 Plug 'jez/vim-better-sml'
-"Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 call plug#end()
 
 filetype plugin on
@@ -217,6 +217,9 @@ let g:mkdp_port = ''
 " ${name} will be replace with the file name
 let g:mkdp_page_title = '?${name}?'
 " endomarkdown-preview.vim stuff
+
+" vim-markdown stuff
+let g:vim_markdown_new_list_item_indent = 2
 
 
 " oCaml stuff
@@ -483,6 +486,6 @@ set ts=2 sts=2 sw=2 et
 set bg=dark
 set incsearch
 set clipboard=unnamedplus
-set smartcase
+set ignorecase smartcase
 set exrc
 set scrolloff=0 " This fix an annoying bug when running vim inside a terminal inside another vim
