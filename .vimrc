@@ -318,9 +318,17 @@ function! Yank() range
 endfunction
 xnoremap <C-y> :call Yank()<CR>
 
+function! Firefox(url) abort
+  if has("macunix")
+    silent! execute "!open -a firefox ".a:url
+  else
+    silent! execute "!firefox ".a:url
+  endif
+endfunc
+
 function! OpenUrlRange() range abort
   silent! normal gvy
-  silent! execute "!firefox ".shellescape(@", 1)
+  call Firefox(shellescape(@", 1))
   redraw!
 endfunc
 Fcmd "OpenUrlRange"
@@ -329,7 +337,7 @@ function! OpenUrlLine() abort
   let link = matchstr(getline("."), 'https\?://\S*')
   echo link
   if link != ""
-    execute "!firefox ".shellescape(link, 1)
+    call Firefox(shellescape(link, 1))
   end
 endfunc
 Fcmd "OpenUrlLine"
@@ -338,7 +346,7 @@ function! OpenPlugin() abort
   let line = getline(".")
   let match = matchlist(line, 'Plug '."'".'\(.\{-\}\)'."'")
   if match[0] != "" && match[1] != ""
-    silent! execute "!firefox https://github.com/".match[1]
+    call Firefox("https://github.com/".match[1])
   endif
 endfunc
 Fcmd "OpenPlugin"
@@ -376,7 +384,7 @@ endfunc
 function! OpenBitbucketBranch() abort
   let branch = trim(getline("."))
   echo branch
-  execute "!firefox ".shellescape("https://bitbucket.versatushpc.com.br/projects/OPENCATTUS/repos/deployment/browse?at=refs/heads/".branch, 1)
+  call Firefox(shellescape("https://bitbucket.versatushpc.com.br/projects/OPENCATTUS/repos/deployment/browse?at=refs/heads/".branch, 1))
 endfunc
 
 function! OpenJiraTicketLine() abort
@@ -385,7 +393,7 @@ function! OpenJiraTicketLine() abort
   let keys = split(projects, " ")
   for k in keys
     for m in Matchall(line, k.'-\d\+')
-      execute "!firefox https://jira.versatushpc.com.br/browse/".m
+      call Firefox("https://jira.versatushpc.com.br/browse/".m)
     endfor
   endfor
 endfunc
