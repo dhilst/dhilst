@@ -1,3 +1,4 @@
+language en_US.utf-8
 if !filereadable($HOME."/.vim/autoload/plug.vim")
   execute "!curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
 endif
@@ -19,6 +20,8 @@ Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'w0rp/ale', { 'on': 'ALEToggle' }
+Plug 'vim-syntastic/syntastic', { 'on': 'SyntasticToggleMode' }
+Plug 'rust-lang/rust.vim'
 "Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 "Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'alvan/vim-closetag'
@@ -78,7 +81,19 @@ match ExtraWhitespace /\s\+$/
 
 " VARIABLES
 " ---------
-"
+
+" Syntastic stuff
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
+
+let g:rustfmt_autosave = 1
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+" Syntastic stuff
+
 "let g:python_host_prog = "/usr/bin/python2"
 let g:python3_host_prog = "/home/dhilst/.nvim-venv/bin/python3"
 let g:ale_python_pylint_options = "--init-hook='import sys; sys.path.append(\"./\")'"
@@ -113,7 +128,6 @@ let g:ale_reason_ls_executable  = "/home/dhilst/.local/bin/reason-language-serve
 let g:ale_linters = {
       \   'php': ['php'],
       \   'python': ['mypy'],
-      \   'rust': ['rls', 'rustc'],
       \   'ocaml': ['merlin', 'ols'],
       \   'reason': ['reason-language-server', 'ols'],
       \   'typescript': ['eslint', 'standard', 'tslint', 'tsserver', 'typecheck', 'xo'],
@@ -124,7 +138,6 @@ let g:ale_fix_on_save = 1
 let g:ale_fixers = {
       \ 'go': ['gofmt', 'goimports'],
       \ 'python': ['autopep8', 'black'],
-      \ 'rust': ['rustfmt'],
       \ 'ocaml': ['ocamlformat', 'ocp-indent', 'remove_trailing_lines', 'trim_whitespace'],
       \ 'reason': ['refmt', 'remove_trailing_lines', 'trim_whitespace'],
       \ 'javascript': ['prettier'],
@@ -413,7 +426,7 @@ nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
-nnoremap <leader>f :Rg<CR>
+nnoremap <leader>f :Ag<CR>
 nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
@@ -460,6 +473,7 @@ au FileType javascript au BufWritePre <buffer> normal gg=G``
 au FileType python noremap <buffer> <F8> :Doctest -o ELLIPSIS<CR>
 au FileType python noremap <buffer> <F9> :!python3 %<CR>
 au FileType rust noremap <buffer> <F8> :make build<CR>
+au FileType rust noremap <buffer> <leader>l :SyntasticToggleMode<CR>
 autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 augroup smlMaps
   au!
