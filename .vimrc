@@ -82,8 +82,17 @@ function! RipgrepFzf(query, fullscreen)
   let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
 endfunction
-
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+function! GkosGrepFzf(query, fullscreen)
+  let command_fmt = 'gkosgrep . %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 0, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+command! -nargs=* -bang GkosGrep call GkosGrepFzf(<q-args>, <bang>0)
+
 "
 " Show trailing white spaces
 highlight ExtraWhitespace ctermbg=red guibg=red
