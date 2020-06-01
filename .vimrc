@@ -5,6 +5,7 @@ endif
 
 call plug#begin('~/.vim/plugged')
 Plug 'crusoexia/vim-monokai'
+Plug 'OmniSharp/omnisharp-vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
@@ -64,16 +65,25 @@ command! -bang -nargs=* Hg
       \   'hrep '.shellescape(<q-args>).' .', 0,
       \   {}, <bang>0)
 
-
 command! -bang -nargs=* Og
       \ call fzf#vim#grep(
       \   'ogrepcomplex '.shellescape(<q-args>).' .', 0,
       \   {}, <bang>0)
 
-command! -bang -nargs=* Rg
+command! -bang -nargs=* Gkosgrep
       \ call fzf#vim#grep(
-      \   '/Users/gecko/.cargo/bin/gkosgrep .'.shellescape(<q-args>), 0,
+      \   $HOME.'/.cargo/bin/gkosgrep . '.shellescape(<q-args>), 0,
       \   {}, <bang>0)
+
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 "
 " Show trailing white spaces
 highlight ExtraWhitespace ctermbg=red guibg=red
@@ -81,6 +91,10 @@ match ExtraWhitespace /\s\+$/
 
 " VARIABLES
 " ---------
+
+" OmniSharp stuff
+let g:OmniSharp_server_stdio = 1
+" OmniSharp stuff
 
 " Syntastic stuff
 "set statusline+=%#warningmsg#
@@ -126,6 +140,7 @@ let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
 let g:ale_reason_ls_executable  = "/home/dhilst/.local/bin/reason-language-server"
 
 let g:ale_linters = {
+      \   'cs': ['OmniSharp'],
       \   'php': ['php'],
       \   'python': ['mypy'],
       \   'ocaml': ['merlin', 'ols'],
@@ -426,7 +441,7 @@ nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
-nnoremap <leader>f :Ag<CR>
+nnoremap <leader>f :RG<CR>
 nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
@@ -456,7 +471,7 @@ noremap <C-l> <ESC>:wincmd l<CR>
 "au BufWritePre *.re,*.rei call LanguageClient#textDocument_formatting_sync()
 "
 "
-au FileType go,php,python setlocal ts=4 sts=4 sw=4 et
+au FileType go,php,python,cs setlocal ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.html.tera set filetype=htmljinja
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
@@ -472,8 +487,10 @@ au BufNewFile *.md read ~/.vim/templates/post.md
 au FileType javascript au BufWritePre <buffer> normal gg=G``
 au FileType python noremap <buffer> <F8> :Doctest -o ELLIPSIS<CR>
 au FileType python noremap <buffer> <F9> :!python3 %<CR>
+au FileType rust noremap <buffer> <F7> :make test<CR>
 au FileType rust noremap <buffer> <F8> :make build<CR>
 au FileType rust noremap <buffer> <leader>l :SyntasticToggleMode<CR>
+au FileType cs noremap <buffer> <leader>fi :OmniSharpFixUsings<CR>
 autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 augroup smlMaps
   au!
