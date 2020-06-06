@@ -75,6 +75,8 @@ command! -bang -nargs=* Gkosgrep
       \   $HOME.'/.cargo/bin/gkosgrep . '.shellescape(<q-args>), 0,
       \   {}, <bang>0)
 
+" Both commands below are like they counterparts but the file name
+" is ignored during the search, which is expected
 function! RipgrepFzf(query, fullscreen)
   let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
   let initial_command = printf(command_fmt, shellescape(a:query))
@@ -450,7 +452,7 @@ nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
-nnoremap <leader>f :RG<CR>
+nnoremap <leader>f :GkosGrep<CR>
 nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
@@ -484,6 +486,7 @@ au FileType go,php,python,cs setlocal ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.html.tera set filetype=htmljinja
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
+au BufRead,BufNewFile *.html.php set ft=html syn=php ts=2 sts=2 sw=2 et
 au FileType go nnoremap <buffer> <F8> :GoBuild<CR>
 
 au FileType yaml,yaml.ansible vmap <buffer> <F7> <Plug>AnsibleExecuteTask
