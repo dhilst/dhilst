@@ -452,7 +452,7 @@ nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
-nnoremap <leader>f :GkosGrep<CR>
+nnoremap <leader>f :RG<CR>
 nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
