@@ -51,6 +51,15 @@ Plug 'farmergreg/vim-lastplace'
 Plug 'lambdalisue/doctest.vim'
 Plug 'jez/vim-better-sml'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
+
+Plug 'docteurklein/php-getter-setter.vim'
+Plug 'matze/vim-move'
+Plug 'beanworks/vim-phpfmt'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 call plug#end()
 
 filetype plugin on
@@ -112,6 +121,11 @@ let g:OmniSharp_server_stdio = 1
 "set statusline+=%{SyntasticStatuslineFlag()}
 "set statusline+=%*
 
+let g:LanguageClient_serverCommands = {
+    \ 'python': ['pyls'],
+    \ 'rust': ['rust-analyzer'],
+    \ }
+
 let g:rustfmt_autosave = 1
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
@@ -132,6 +146,16 @@ let g:python3_host_prog = '/usr/local/bin/python3'
 let g:PHP_vintage_case_default_indent = 1
 
 " make YCM compatible with UltiSnips (using supertab)
+let g:ycm_language_server =
+\ [
+\   {
+\     'name': 'rust',
+\     'cmdline': ['rust-analyzer'],
+\     'filetypes': ['rust'],
+\     'project_root_files': ['Cargo.toml']
+\   }
+\ ]
+
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 let g:SuperTabDefaultCompletionType = '<C-n>'
@@ -162,6 +186,7 @@ let g:ale_linters = {
 let g:ale_linters_explicit = 1
 let g:ale_fix_on_save = 1
 let g:ale_fixers = {
+      \ '*': ['remove_trailing_lines', 'trim_whitespace'],
       \ 'go': ['gofmt', 'goimports'],
       \ 'python': ['autopep8', 'black'],
       \ 'ocaml': ['ocamlformat', 'ocp-indent', 'remove_trailing_lines', 'trim_whitespace'],
@@ -260,6 +285,9 @@ let g:mkdp_page_title = '?${name}?'
 " vim-markdown stuff
 let g:vim_markdown_new_list_item_indent = 2
 
+" vim-phpfmt stuff
+let g:phpfmt_autosave = 0
+" end of vim-phpfmt stuff
 
 " oCaml stuff
 " let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
@@ -283,14 +311,8 @@ func! s:AnsibleAnswerInCurrentFolder()
   endtry
 endfunc
 let g:ansible_answers = "test/answers-simple.yaml -e @test/answers-slurm.yaml"
-let g:ansible_execute_task_command = "ansible-playbook -v test/include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers." --limit ansible-test1"
+let g:ansible_execute_task_command = "ANSIBLE_CONFIG=/Users/gecko/code/deployment/ansible.cfg ansible-playbook -v test/include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers." --limit ansible-test1"
 let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts --limit ansible-test1 -e @".g:ansible_answers
-
-" oCaml stuff
-let g:LanguageClient_serverCommands = {
-    \ 'reason': ['/home/dhilst/.yarn/bin/ocaml-language-server'],
-    \ }
-    "\ 'reason': ['/home/dhilst/.local/bin/reason-language-server'],
 
 " enable autocomplete
 let g:deoplete#enable_at_startup = 1
@@ -431,7 +453,7 @@ endfunc
 
 function! OpenJiraTicketLine() abort
   let line = getline(".")
-  let projects = "OPENCATTUS VXCAT"
+  let projects = "OPENCATTUS VXCAT COBRANCA"
   let keys = split(projects, " ")
   for k in keys
     for m in Matchall(line, k.'-\d\+')
@@ -452,8 +474,8 @@ nnoremap <leader>v :e! ~/.vimrc<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
-nnoremap <leader>f :GkosGrep<CR>
-nnoremap <leader>F :RG<CR>
+nnoremap <leader>f :RG<CR>
+nnoremap <leader>F :Rg<CR>
 nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>l :ALEToggle<CR>
 nnoremap <leader>/ :BLines<CR>
@@ -482,7 +504,7 @@ noremap <C-l> <ESC>:wincmd l<CR>
 
 "au BufWritePre *.re,*.rei call LanguageClient#textDocument_formatting_sync()
 "
-"
+au BufWritePre *.cs :OmniSharpCodeFormat
 au FileType go,php,python,cs setlocal ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.html.tera set filetype=htmljinja
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
@@ -497,9 +519,11 @@ au FileType vim               nnoremap <buffer> <F9> :so %<CR>
 
 au BufNewFile *.md read ~/.vim/templates/post.md
 "auto format for the lazy
-au FileType javascript au BufWritePre <buffer> normal gg=G``
+"au FileType javascript au BufWritePre <buffer> normal gg=G``
 au FileType python noremap <buffer> <F8> :Doctest -o ELLIPSIS<CR>
 au FileType python noremap <buffer> <F9> :!python3 %<CR>
+au FileType python noremap <buffer> <F10> :!python3 -m mypy %<CR>
+au FileType rust nmap <buffer> <F3> <Plug>(lcn-menu)
 au FileType rust noremap <buffer> <F7> :make test<CR>
 au FileType rust noremap <buffer> <F8> :make build<CR>
 au FileType rust noremap <buffer> <leader>l :SyntasticToggleMode<CR>
@@ -533,3 +557,4 @@ set clipboard=unnamedplus
 set ignorecase smartcase
 set exrc
 set scrolloff=0 " This fix an annoying bug when running vim inside a terminal inside another vim
+set fo+=r
