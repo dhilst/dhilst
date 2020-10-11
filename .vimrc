@@ -4,7 +4,6 @@ if !filereadable($HOME."/.vim/autoload/plug.vim")
 endif
 
 call plug#begin('~/.vim/plugged')
-Plug 'crusoexia/vim-monokai'
 Plug 'OmniSharp/omnisharp-vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -65,7 +64,6 @@ call plug#end()
 filetype plugin on
 filetype plugin indent on
 
-colorscheme monokai
 
 " Command for git grep
 " - fzf#vim#grep(command, with_column, [options], [fullscreen])
@@ -551,7 +549,6 @@ set ls=2
 set backupcopy=yes
 set mouse=a
 set ts=2 sts=2 sw=2 et
-set bg=dark
 set incsearch
 set clipboard=unnamedplus
 set ignorecase smartcase
