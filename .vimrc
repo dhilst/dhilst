@@ -4,61 +4,40 @@ if !filereadable($HOME."/.vim/autoload/plug.vim")
 endif
 
 call plug#begin('~/.vim/plugged')
-Plug 'OmniSharp/omnisharp-vim'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-sensible'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-scriptease'
-Plug 'tpope/vim-dispatch'
-"Plug 'vsushkov/vim-phpcs'
-"Plug 'tpope/vim-rsi'
-Plug 'scrooloose/nerdtree'
+Plug 'OmniSharp/omnisharp-vim' " c# linter
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy finder
+Plug 'junegunn/fzf.vim' " fuzzy finder
+Plug 'tpope/vim-fugitive' " git integration
+Plug 'tpope/vim-sensible' " emacs binding on command editning and sensible defaults
+Plug 'tpope/vim-surround' " surround things
+Plug 'tpope/vim-abolish'  " smarted substitution
+Plug 'scrooloose/nerdtree' " Better tree
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
-Plug 'w0rp/ale', { 'on': 'ALEToggle' }
-Plug 'vim-syntastic/syntastic', { 'on': 'SyntasticToggleMode' }
-Plug 'rust-lang/rust.vim'
-"Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-"Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
-Plug 'alvan/vim-closetag'
-Plug 'mattn/gist-vim'
-Plug 'tpope/vim-obsession'
-"Plug 'rust-lang/rust.vim'
-"Plug 'sapphirecat/php-psr2-vim'
-Plug 'osyo-manga/vim-over'
-Plug 'ervandew/supertab'
-"Plug 'Valloric/YouCompleteMe'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-Plug 'psf/black'
-Plug 'sheerun/vim-polyglot'
-Plug 'mattn/webapi-vim'
-Plug 'mitsuhiko/vim-jinja'
-Plug 'dhilst/vim-ansible-execute-task'
-"Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-"Plug 'reasonml-editor/vim-reason-plus'
-"Plug 'autozimu/LanguageClient-neovim', {
-"    \ 'branch': 'next',
-"    \ 'do': 'bash install.sh',
-"    \ }
-Plug 'AndrewRadev/bufferize.vim'
-Plug 'farmergreg/vim-lastplace'
-Plug 'lambdalisue/doctest.vim'
-Plug 'jez/vim-better-sml'
+Plug 'w0rp/ale', { 'on': 'ALEToggle' } " async linter language server integration, multi language
+Plug 'vim-syntastic/syntastic', { 'on': 'SyntasticToggleMode' } " same as ale, Rust wont support ale
+Plug 'rust-lang/rust.vim' " Rust <3
+Plug 'alvan/vim-closetag' " Auto close html tags
+Plug 'mattn/gist-vim' " Send stuff to gist
+Plug 'osyo-manga/vim-over' " Live search and replace preview
+Plug 'ervandew/supertab' " Smart tab
+Plug 'SirVer/ultisnips' " Insert code snippets from alias cls -> class $1:
+Plug 'honza/vim-snippets' " same as above
+Plug 'psf/black' " python linter
+Plug 'mattn/webapi-vim' " dependence of gist
+Plug 'mitsuhiko/vim-jinja' " Jinja integration
+Plug 'dhilst/vim-ansible-execute-task' " Execute selected text as ansible task
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
-
 Plug 'docteurklein/php-getter-setter.vim'
-Plug 'matze/vim-move'
-Plug 'beanworks/vim-phpfmt'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'matze/vim-move' " alt arrow moving;:w
+Plug 'beanworks/vim-phpfmt' " php auto format
+Plug 'neoclide/coc.nvim', {'branch': 'release'} " dependence of rust-analizer?
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
     \ }
+Plug 'lifepillar/pgsql.vim' " pgsql integration
 call plug#end()
 
 filetype plugin on
@@ -67,16 +46,6 @@ filetype plugin indent on
 
 " Command for git grep
 " - fzf#vim#grep(command, with_column, [options], [fullscreen])
-command! -bang -nargs=* Hg
-      \ call fzf#vim#grep(
-      \   'hrep '.shellescape(<q-args>).' .', 0,
-      \   {}, <bang>0)
-
-command! -bang -nargs=* Og
-      \ call fzf#vim#grep(
-      \   'ogrepcomplex '.shellescape(<q-args>).' .', 0,
-      \   {}, <bang>0)
-
 command! -bang -nargs=* Gkosgrep
       \ call fzf#vim#grep(
       \   $HOME.'/.cargo/bin/gkosgrep . '.shellescape(<q-args>), 0,
@@ -102,10 +71,10 @@ function! GkosGrepFzf(query, fullscreen)
 endfunction
 command! -nargs=* -bang GkosGrep call GkosGrepFzf(<q-args>, <bang>0)
 
-"
 " Show trailing white spaces
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
 
 " VARIABLES
 " ---------
@@ -360,12 +329,13 @@ func! s:interm(command) abort
   call termopen(a:command)
 endfunc
 
-
+" A shortcut to create a command that call a funciton of the same name
 func! s:fcmd(func) abort
   execute "command! ".a:func." :call ".a:func."()"
 endfunc
 command! -nargs=1 Fcmd :call s:fcmd(<args>)
 
+" Push dot files changes to my git, this file for example
 function! DHUpdateDotFiles()
   echom 'Updating configs ...'
   call s:interm("git -C ~/code/dhilst commit -am 'update config' && git -C ~/code/dhilst push origin master")
@@ -380,6 +350,7 @@ function! Yank() range
 endfunction
 xnoremap <C-y> :call Yank()<CR>
 
+" Open firefox
 function! Firefox(url) abort
   if has("macunix")
     silent! execute "!open -a firefox ".a:url
@@ -388,6 +359,7 @@ function! Firefox(url) abort
   endif
 endfunc
 
+" Open an url from visual block
 function! OpenUrlRange() range abort
   silent! normal gvy
   call Firefox(shellescape(@", 1))
@@ -395,6 +367,7 @@ function! OpenUrlRange() range abort
 endfunc
 Fcmd "OpenUrlRange"
 
+" Open an url from line
 function! OpenUrlLine() abort
   let link = matchstr(getline("."), 'https\?://\S*')
   echo link
@@ -404,6 +377,7 @@ function! OpenUrlLine() abort
 endfunc
 Fcmd "OpenUrlLine"
 
+" Open a plugin at "Plug foo/bar" lines
 function! OpenPlugin() abort
   let line = getline(".")
   let match = matchlist(line, 'Plug '."'".'\(.\{-\}\)'."'")
@@ -429,6 +403,7 @@ EOF
   normal kdd
 endfunc
 
+" Find all matches
 func Matchall(text, pattern) abort
   let count = 1
   let matches = []
@@ -443,12 +418,14 @@ func Matchall(text, pattern) abort
   return matches
 endfunc
 
+" Open a Bitbucket branch at line
 function! OpenBitbucketBranch() abort
   let branch = trim(getline("."))
   echo branch
   call Firefox(shellescape("https://bitbucket.versatushpc.com.br/projects/OPENCATTUS/repos/deployment/browse?at=refs/heads/".branch, 1))
 endfunc
 
+" Open all jira tickets like FOO-123 at line
 function! OpenJiraTicketLine() abort
   let line = getline(".")
   let projects = "OPENCATTUS VXCAT COBRANCA"
@@ -500,8 +477,6 @@ noremap <C-h> <ESC>:wincmd h<CR>
 noremap <C-k> <ESC>:wincmd k<CR>
 noremap <C-l> <ESC>:wincmd l<CR>
 
-"au BufWritePre *.re,*.rei call LanguageClient#textDocument_formatting_sync()
-"
 au BufWritePre *.cs :OmniSharpCodeFormat
 au FileType go,php,python,cs setlocal ts=4 sts=4 sw=4 et
 au BufRead,BufNewFile *.html.tera set filetype=htmljinja
@@ -542,16 +517,16 @@ augroup smlMaps
   au FileType sml nnoremap <silent> <buffer> <leader>iz :SMLReplShell<CR>
 augroup END
 
-"set clipboard=unnamedplus
-set nohls
-set showcmd
-set ls=2
-set backupcopy=yes
-set mouse=a
-set ts=2 sts=2 sw=2 et
-set incsearch
-set clipboard=unnamedplus
-set ignorecase smartcase
-set exrc
-set scrolloff=0 " This fix an annoying bug when running vim inside a terminal inside another vim
-set fo+=r
+set nohls                      " Do not highlight searchs by default, is annoying
+set showcmd                    " Show selection statistics, like characters, words, lines etc
+set ls=2                       " Show the file name at status line
+set backupcopy=yes             " Some watch commands have problem with how vim save files, this solves it
+set mouse=a                    " Enable mouse
+set ts=2 sts=2 sw=2 et         " My default tab sizes
+set incsearch                  " Search while typing
+set clipboard=unnamedplus      " Clipboard native integration
+set ignorecase smartcase       " Smarter case for searching
+set exrc                       " Enable .vimrc in the current folder
+set scrolloff=0                " This fix an annoying bug when running
+                               "   vim inside a terminal inside another vim
+set fo+=r                      " Format options, add a comment when you press enter from a commented line
