@@ -32,12 +32,16 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 Plug 'docteurklein/php-getter-setter.vim'
 Plug 'matze/vim-move' " alt arrow moving;:w
 Plug 'beanworks/vim-phpfmt' " php auto format
-Plug 'neoclide/coc.nvim', {'branch': 'release'} " dependence of rust-analizer?
+"Plug 'neoclide/coc.nvim', {'branch': 'release'} " dependence of rust-analizer?
+Plug 'lifepillar/pgsql.vim' " pgsql integration
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
     \ }
-Plug 'lifepillar/pgsql.vim' " pgsql integration
+Plug 'ionide/Ionide-vim', {
+      \ 'do':  'make fsautocomplete',
+      \}
+
 call plug#end()
 
 filetype plugin on
@@ -78,6 +82,9 @@ autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
 
 " VARIABLES
 " ---------
+
+" pgpsql stuff
+let g:sql_type_default = 'pgsql' " Highlight .sql files with pgpsql plugin
 
 " OmniSharp stuff
 let g:OmniSharp_server_stdio = 1
@@ -132,8 +139,8 @@ set rtp+=~/.vim/UltiSnips
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-"let g:UltiSnipsSnippetsDir=$HOME."/.vim/UltiSnips"
-"let g:UltiSnipsSnippetDirectories=[g:UltiSnipsSnippetsDir]
+let g:UltiSnipsSnippetsDir=$HOME."/.vim/UltiSnips"
+let g:UltiSnipsSnippetDirectories=[g:UltiSnipsSnippetsDir]
 "
 let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjango,*.html.tera"
 let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
@@ -277,9 +284,10 @@ func! s:AnsibleAnswerInCurrentFolder()
     return "answers_file_not_found"
   endtry
 endfunc
-let g:ansible_answers = "test/answers-simple.yaml -e @test/answers-slurm.yaml"
-let g:ansible_execute_task_command = "ANSIBLE_CONFIG=/Users/gecko/code/deployment/ansible.cfg ansible-playbook -v test/include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers." --limit ansible-test1"
-let g:ansible_execute_playbook_command = "ansible-playbook -v $FILE -i inventory/test_hosts --limit ansible-test1 -e @".g:ansible_answers
+let g:ansible_answers = "test/answers-simple.yaml -e @test/answers-pbs.yaml"
+let g:ansible_host = "ansible-test2"
+let g:ansible_execute_task_command = "ANSIBLE_FILTER_PLUGINS=$PWD/filter_plugins ANSIBLE_CONFIG=/Users/gecko/code/deployment/ansible.cfg ansible-playbook -v test/include_tasks.yaml -i inventory/test_hosts -e file=$FILE -e @".g:ansible_answers." --limit ".g:ansible_host
+let g:ansible_execute_playbook_command = "ANSIBLE_CONFIG=/Users/gecko/code/deployment/ansible.cfg ansible-playbook -v $FILE -i inventory/test_hosts --limit ".g:ansible_host." -e @".g:ansible_answers
 
 " enable autocomplete
 let g:deoplete#enable_at_startup = 1
@@ -485,6 +493,7 @@ au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 au BufRead,BufNewFile *.html.php set ft=html syn=php ts=2 sts=2 sw=2 et
 au FileType go nnoremap <buffer> <F8> :GoBuild<CR>
 
+
 au FileType yaml,yaml.ansible vmap <buffer> <F7> <Plug>AnsibleExecuteTask
 au FileType yaml.ansible      nmap <buffer> <F8> <Plug>AnsibleExecuteFile
 au FileType yaml              nmap <buffer> <F9> <Plug>AnsibleExecutePlaybook
@@ -493,7 +502,7 @@ au FileType vim               nnoremap <buffer> <F9> :so %<CR>
 au BufNewFile *.md read ~/.vim/templates/post.md
 "auto format for the lazy
 "au FileType javascript au BufWritePre <buffer> normal gg=G``
-au FileType python noremap <buffer> <F8> :Doctest -o ELLIPSIS<CR>
+au FileType python noremap <buffer> <F8> :!python3 -m doctest -o ELLIPSIS %<CR>
 au FileType python noremap <buffer> <F9> :!python3 %<CR>
 au FileType python noremap <buffer> <F10> :!python3 -m mypy %<CR>
 au FileType rust nmap <buffer> <F3> <Plug>(lcn-menu)
@@ -502,6 +511,13 @@ au FileType rust noremap <buffer> <F8> :make build<CR>
 au FileType rust noremap <buffer> <leader>l :SyntasticToggleMode<CR>
 au FileType cs noremap <buffer> <leader>fi :OmniSharpFixUsings<CR>
 autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+
+augroup fsMaps
+  au!
+  au FileType fsharp setlocal errorformat=\ %#%f(%l\\\,%c):\ %m
+  au FileType fsharp set makeprg=dotnet\ build
+augroup END
+
 augroup smlMaps
   au!
   au FileType sml nnoremap <buffer> <leader>t :SMLTypeQuery<CR>
@@ -530,3 +546,4 @@ set exrc                       " Enable .vimrc in the current folder
 set scrolloff=0                " This fix an annoying bug when running
                                "   vim inside a terminal inside another vim
 set fo+=r                      " Format options, add a comment when you press enter from a commented line
+
