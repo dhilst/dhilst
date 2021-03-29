@@ -42,6 +42,7 @@ Plug 'autozimu/LanguageClient-neovim', {
 Plug 'ionide/Ionide-vim', {
       \ 'do':  'make fsautocomplete',
       \}
+Plug 'roxma/LanguageServer-php-neovim',  {'do': 'composer install && composer run-script parse-stubs'}
 
 call plug#end()
 
