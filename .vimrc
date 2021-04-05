@@ -15,7 +15,7 @@ Plug 'scrooloose/nerdtree' " Better tree
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
-"Plug 'w0rp/ale', { 'on': 'ALEToggle' } " async linter language server integration, multi language
+Plug 'w0rp/ale', { 'on': 'ALEToggle' } " async linter language server integration, multi language
 Plug 'w0rp/ale'
 Plug 'vim-syntastic/syntastic', { 'on': 'SyntasticToggleMode' } " same as ale, Rust wont support ale
 Plug 'rust-lang/rust.vim' " Rust <3
@@ -43,7 +43,8 @@ Plug 'ionide/Ionide-vim', {
       \ 'do':  'make fsautocomplete',
       \}
 Plug 'roxma/LanguageServer-php-neovim',  {'do': 'composer install && composer run-script parse-stubs'}
-
+Plug 'wakatime/vim-wakatime'
+Plug 'junegunn/vader.vim'
 call plug#end()
 
 filetype plugin on
@@ -100,8 +101,8 @@ let g:OmniSharp_server_stdio = 1
 " LanguageClient-neovim stuff
 let g:LanguageClient_serverCommands = {
     \ 'python': ['pyls'],
-    \ 'fsharp': ['dotnet', expand('~/.vim/plugged/Ionide-vim/fsac/fsautocomplete.dll')]
     \ }
+    "\ 'fsharp': ['dotnet', expand('~/.vim/plugged/Ionide-vim/fsac/fsautocomplete.dll')]
 let g:LanguageClient_loggingLevel = 'INFO'
 let g:LanguageClient_virtualTextPrefix = ''
 let g:LanguageClient_loggingFile =  expand('~/.local/share/nvim/LanguageClient.log')
@@ -153,6 +154,7 @@ let g:UltiSnipsSnippetDirectories=[g:UltiSnipsSnippetsDir]
 let g:closetag_filenames = "*.html,*.xhtml,*.phtml,*.erb,*.jsx,*.tsx,*.htmldjango,*.html.tera"
 let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
 
+" ALE stuff
 
 let g:ale_reason_ls_executable  = "/home/dhilst/.local/bin/reason-language-server"
 
@@ -163,7 +165,7 @@ let g:ale_linters = {
       \   'ocaml': ['merlin', 'ols'],
       \   'reason': ['reason-language-server', 'ols'],
       \   'typescript': ['eslint', 'standard', 'tslint', 'tsserver', 'typecheck', 'xo'],
-      \   'fsharp': ['FSharpLint'],
+      \   'fsharp': ['FsAutoComplete'],
       \ }
 
 let g:ale_linters_explicit = 1
@@ -179,6 +181,12 @@ let g:ale_fixers = {
       \ 'css': ['prettier'],
       \ 'yaml': ['trim_whitespace'],
       \ }
+
+
+" Change hightlight color for are
+hi ALEError cterm=underline ctermbg=NONE ctermfg=Red
+
+" ALE stuff end
 
 " markdown-preview.vim stuff
 "" set to 1, nvim will open the preview window after entering the markdown buffer
@@ -483,7 +491,6 @@ inoremap <C-a> ^
 "nnoremap <TAB> gt
 "nnoremap <S-TAB> gT
 
-noremap <C-x>; <ESC>:
 nnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r><c-w>').'<CR>'
 vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
 nnoremap :%s/ <ESC>:OverCommandLine %s/<CR>
@@ -500,6 +507,7 @@ au BufRead,BufNewFile *.html.tera set filetype=htmljinja
 au FileType yaml setlocal ts=2 sts=2 sw=2 et
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 au BufRead,BufNewFile *.html.php set ft=html syn=php ts=2 sts=2 sw=2 et
+au FileType go hi
 au FileType go nnoremap <buffer> <F8> :GoBuild<CR>
 
 
@@ -556,45 +564,3 @@ set scrolloff=0                " This fix an annoying bug when running
                                "   vim inside a terminal inside another vim
 set fo+=r                      " Format options, add a comment when you press enter from a commented line
 set signcolumn=yes             " Always draw sign column. Prevent buffer moving when adding/deleting sign.
-
-
-" fsharp ALE support
-function! s:fshpar_setup() abort
-  function! Fsharp_callback(bufnr, lines) abort
-    " output example: Program.fs(7,5,7,9):FSharpLint warning FL0038: Consider changing `path` to PascalCase.
-    let pattern = '\([^(]\+\)(\(\d\+\),\(\d\+\),\(\d\+\),\(\d\+\)):FSharpLint \(\w\+\) \(.*\)$'
-    let lines = a:lines[1:-2]
-    let result = []
-    for line in lines
-      let matches = matchlist(line, pattern)
-      if len(matches) >= 7
-        if matches[6] == 'error'
-          let type = 'E'
-        else
-          let type = 'W'
-        end
-        let element = {
-              \ 'text': matches[7],
-              \ 'detail': matches[7],
-              \ 'lnum':  matches[2],
-              \ 'col': matches[3],
-              \ 'end_lnum': matches[4],
-              \ 'end_col': matches[5],
-              \ 'filename': fnamemodify(matches[1], ':p'),
-              \ 'type': type
-              \ }
-        call add(result, element)
-      endif
-    endfor
-    return result
-  endfun
-
-  call ale#linter#Define('fsharp', {
-  \   'name': 'FSharpLint',
-  \   'alias': ['fsharplint'],
-  \   'executable': 'dotnet',
-  \   'command': '%e fsharplint --format msbuild lint %t',
-  \   'callback': 'Fsharp_callback',
-  \   'lint_file': 1,
-  \ })
-endfunction
