@@ -1,8 +1,4 @@
 language en_US.utf-8
-if !filereadable($HOME."/.vim/autoload/plug.vim")
-  execute "!curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
-endif
-
 call plug#begin('~/.vim/plugged')
 Plug 'OmniSharp/omnisharp-vim' " c# linter
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy finder
@@ -15,8 +11,7 @@ Plug 'scrooloose/nerdtree' " Better tree
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
-Plug 'w0rp/ale', { 'on': 'ALEToggle' } " async linter language server integration, multi language
-Plug 'w0rp/ale'
+Plug 'w0rp/ale', { 'on': 'ALEToggle' }
 Plug 'vim-syntastic/syntastic', { 'on': 'SyntasticToggleMode' } " same as ale, Rust wont support ale
 Plug 'rust-lang/rust.vim' " Rust <3
 Plug 'alvan/vim-closetag' " Auto close html tags
@@ -33,7 +28,8 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 Plug 'docteurklein/php-getter-setter.vim'
 Plug 'matze/vim-move' " alt arrow moving;:w
 Plug 'beanworks/vim-phpfmt' " php auto format
-"Plug 'neoclide/coc.nvim', {'branch': 'release'} " dependence of rust-analizer?
+Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['haskell'] }
+Plug 'prabirshrestha/asyncomplete.vim', {'for': 'cs' }
 Plug 'lifepillar/pgsql.vim' " pgsql integration
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
@@ -45,11 +41,16 @@ Plug 'ionide/Ionide-vim', {
 Plug 'roxma/LanguageServer-php-neovim',  {'do': 'composer install && composer run-script parse-stubs'}
 Plug 'wakatime/vim-wakatime'
 Plug 'junegunn/vader.vim'
+"Plug 'bitc/vim-hdevtools'
+Plug 'phpactor/phpactor', {'for': 'php', 'tag': '*', 'do': 'composer install --no-dev -o'}
+Plug 'wlangstroth/vim-racket'
+Plug 'sickill/vim-monokai'
 call plug#end()
 
 filetype plugin on
 filetype plugin indent on
 
+colorscheme monokai
 
 " Command for git grep
 " - fzf#vim#grep(command, with_column, [options], [fullscreen])
@@ -101,8 +102,8 @@ let g:OmniSharp_server_stdio = 1
 " LanguageClient-neovim stuff
 let g:LanguageClient_serverCommands = {
     \ 'python': ['pyls'],
+    \ 'fsharp': ['dotnet', expand('~/.vim/plugged/Ionide-vim/fsac/fsautocomplete.dll')]
     \ }
-    "\ 'fsharp': ['dotnet', expand('~/.vim/plugged/Ionide-vim/fsac/fsautocomplete.dll')]
 let g:LanguageClient_loggingLevel = 'INFO'
 let g:LanguageClient_virtualTextPrefix = ''
 let g:LanguageClient_loggingFile =  expand('~/.local/share/nvim/LanguageClient.log')
@@ -117,31 +118,19 @@ let g:syntastic_check_on_wq = 0
 " Syntastic stuff
 
 "let g:python_host_prog = "/usr/bin/python2"
-let g:python3_host_prog = "/home/dhilst/.nvim-venv/bin/python3"
-let g:ale_python_pylint_options = "--init-hook='import sys; sys.path.append(\"./\")'"
-let g:sml_auto_create_def_use = "always"
+"let g:python3_host_prog = "/home/dhilst/.nvim-venv/bin/python3"
+"let g:ale_python_pylint_options = "--init-hook='import sys; sys.path.append(\"./\")'"
 
 " macos stuff
-let g:python2_host_prog = '/usr/local/bin/python'
-let g:python3_host_prog = '/usr/local/bin/python3'
+if has("macunix")
+  let g:python2_host_prog = '/usr/local/bin/python'
+  let g:python3_host_prog = '/usr/local/bin/python3'
+endif
 
 " Indent php switch statements
 let g:PHP_vintage_case_default_indent = 1
 
-" make YCM compatible with UltiSnips (using supertab)
-let g:ycm_language_server =
-\ [
-\   {
-\     'name': 'rust',
-\     'cmdline': ['rust-analyzer'],
-\     'filetypes': ['rust'],
-\     'project_root_files': ['Cargo.toml']
-\   }
-\ ]
-
-let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
-let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
-let g:SuperTabDefaultCompletionType = '<C-n>'
+let g:SuperTabDefaultCompletionType = '<tab>'
 let g:UltiSnipsEditSplit = 'vertical'
 " better key bindings for UltiSnipsExpandTrigger
 set rtp+=~/.vim/UltiSnips
@@ -160,12 +149,14 @@ let g:ale_reason_ls_executable  = "/home/dhilst/.local/bin/reason-language-serve
 
 let g:ale_linters = {
       \   'cs': ['OmniSharp'],
-      \   'php': ['php'],
+      \   'php': ['php', 'phan'],
       \   'python': ['mypy'],
       \   'ocaml': ['merlin', 'ols'],
       \   'reason': ['reason-language-server', 'ols'],
       \   'typescript': ['eslint', 'standard', 'tslint', 'tsserver', 'typecheck', 'xo'],
       \   'fsharp': ['FsAutoComplete'],
+      \   'vim': ['vint'],
+      \   'haskell': ['hdevtools'],
       \ }
 
 let g:ale_linters_explicit = 1
@@ -180,6 +171,8 @@ let g:ale_fixers = {
       \ 'typescript': ['prettier'],
       \ 'css': ['prettier'],
       \ 'yaml': ['trim_whitespace'],
+      \ 'php': ['php_cs_fixer'],
+      \ 'haskell': ['stylish-haskell'],
       \ }
 
 
@@ -317,6 +310,13 @@ endif
 " Handy functions
 func! RandString(n) abort
   return system("openssl rand -base64 ".a:n)
+endfunc
+
+func! Base64DecodeRegion() range abort
+  silent! normal gvy
+  let @+ = system('echo -n '.@".' | base64 -d')
+  let @" = @+
+  echo 'Copied to clipboard: '.@+
 endfunc
 
 func! Findbuf(bufpat) abort
@@ -500,6 +500,7 @@ noremap <C-j> <ESC>:wincmd j<CR>
 noremap <C-h> <ESC>:wincmd h<CR>
 noremap <C-k> <ESC>:wincmd k<CR>
 noremap <C-l> <ESC>:wincmd l<CR>
+inoremap \- λ
 
 au BufWritePre *.cs :OmniSharpCodeFormat
 au FileType go,php,python,cs setlocal ts=4 sts=4 sw=4 et
@@ -529,25 +530,22 @@ au FileType rust noremap <buffer> <leader>l :SyntasticToggleMode<CR>
 au FileType cs noremap <buffer> <leader>fi :OmniSharpFixUsings<CR>
 autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 
+augroup haMaps
+ au FileType haskell nnoremap <buffer> <F1> :HdevtoolsType<CR>
+ au FileType haskell nnoremap <buffer> <silent> <F2> :HdevtoolsInfo<CR>
+ au FileType haskell nnoremap <buffer> <silent> <F3> :HdevtoolsClear<CR>
+ au FileType haskell nmap <buffer> <leader>n <Plug>(coc-diagnostic-next)
+ au FileType haskell nmap <buffer> <leader>N <Plug>(coc-diagnostic-prev)
+ au FileType haskell nmap <buffer> <leader>t <Plug>(coc-type-definition)
+ au FileType haskell nmap <buffer> <leader>d <Plug>(coc-definition)
+ au FileType haskell nmap <buffer> <leader>i <Plug>(coc-implementation)
+ au FileType haskell nmap <buffer> <leader>r <Plug>(coc-references)
+augroup END
+
 augroup fsMaps
   au!
   au FileType fsharp setlocal errorformat=\ %#%f(%l\\\,%c):\ %m
   au FileType fsharp set makeprg=dotnet\ build
-augroup END
-
-augroup smlMaps
-  au!
-  au FileType sml nnoremap <buffer> <leader>t :SMLTypeQuery<CR>
-  au FileType sml nnoremap <buffer> gd :SMLJumpToDef<CR>
-
-  au FileType sml nnoremap <silent> <buffer> <leader>is :SMLReplStart<CR>
-  au FileType sml nnoremap <silent> <buffer> <leader>ik :SMLReplStop<CR>
-  au FileType sml nnoremap <silent> <buffer> <leader>if :SMLReplBuild<CR>
-  au FileType sml nnoremap <silent> <buffer> <leader>io :SMLReplOpen<CR>
-  au FileType sml nnoremap <silent> <buffer> <leader>iu :SMLReplUse<CR>
-  au FileType sml nnoremap <silent> <buffer> <leader>ic :SMLReplClear<CR>
-  au FileType sml nnoremap <silent> <buffer> <leader>ip :SMLReplPrintDepth<CR>
-  au FileType sml nnoremap <silent> <buffer> <leader>iz :SMLReplShell<CR>
 augroup END
 
 set nohls                      " Do not highlight searchs by default, is annoying
@@ -564,3 +562,5 @@ set scrolloff=0                " This fix an annoying bug when running
                                "   vim inside a terminal inside another vim
 set fo+=r                      " Format options, add a comment when you press enter from a commented line
 set signcolumn=yes             " Always draw sign column. Prevent buffer moving when adding/deleting sign.
+
+set rtp+=~/code/vlisp

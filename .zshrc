@@ -4,7 +4,7 @@ export LC_ALL="en_US.utf-8"
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/gecko/.oh-my-zsh"
+#export ZSH="/Users/gecko/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -72,7 +72,7 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git)
 
-source $ZSH/oh-my-zsh.sh
+# source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -107,29 +107,3 @@ function vim   export PATH="$HOME/.symfony/bin:$PATH"
 alias vi=nvim
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-export PATH=$PATH:~/.local/bin
-export PATH=$PATH:~/Library/Python/3.7/bin
-
-# NVM stuff
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# Rust stuff
-export PATH=$PATH:~/.cargo/bin
-
-# opam configuration
-test -r /Users/gecko/.opam/opam-init/init.zsh && . /Users/gecko/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
-
-# Load pyenv
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-
-export PATH="/usr/local/opt/mysql-client/bin:$PATH"
-
-# Symfony stuff
-export PATH="$HOME/.symfony/bin:$PATH"
-
-export PATH="/usr/local/opt/php@7.3/bin:$PATH"
-export PATH="/usr/local/opt/php@7.3/sbin:$PATH"
