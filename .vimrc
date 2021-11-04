@@ -7,6 +7,7 @@ Plug 'tpope/vim-fugitive' " git integration
 Plug 'tpope/vim-sensible' " emacs binding on command editning and sensible defaults
 Plug 'tpope/vim-surround' " surround things
 Plug 'tpope/vim-abolish'  " smarted substitution
+Plug 'tpope/vim-commentary'  " smarted substitution
 Plug 'scrooloose/nerdtree' " Better tree
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
@@ -14,6 +15,7 @@ Plug 'maxmellon/vim-jsx-pretty'
 Plug 'w0rp/ale', { 'on': 'ALEToggle' }
 Plug 'vim-syntastic/syntastic', { 'on': 'SyntasticToggleMode' } " same as ale, Rust wont support ale
 Plug 'rust-lang/rust.vim' " Rust <3
+Plug 'whonore/Coqtail'
 Plug 'alvan/vim-closetag' " Auto close html tags
 Plug 'mattn/gist-vim' " Send stuff to gist
 Plug 'osyo-manga/vim-over' " Live search and replace preview
@@ -80,9 +82,9 @@ endfunction
 command! -nargs=* -bang GkosGrep call GkosGrepFzf(<q-args>, <bang>0)
 
 " Show trailing white spaces
-highlight ExtraWhitespace ctermbg=red guibg=red
-match ExtraWhitespace /\s\+$/
-autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+"highlight ExtraWhitespace ctermbg=red guibg=red
+"match ExtraWhitespace /\s\+$/
+"autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
 
 " VARIABLES
 " ---------
@@ -149,32 +151,32 @@ let g:ale_reason_ls_executable  = "/home/dhilst/.local/bin/reason-language-serve
 
 let g:ale_linters = {
       \   'cs': ['OmniSharp'],
-      \   'php': ['php', 'phan'],
+      \   'php': ['php', 'psalm'],
       \   'python': ['mypy'],
       \   'ocaml': ['merlin', 'ols'],
       \   'reason': ['reason-language-server', 'ols'],
       \   'typescript': ['eslint', 'standard', 'tslint', 'tsserver', 'typecheck', 'xo'],
+      \   'javascript': ['eslint'],
       \   'fsharp': ['FsAutoComplete'],
       \   'vim': ['vint'],
-      \   'haskell': ['hdevtools'],
       \ }
 
 let g:ale_linters_explicit = 1
 let g:ale_fix_on_save = 1
 let g:ale_fixers = {
-      \ '*': ['remove_trailing_lines', 'trim_whitespace'],
       \ 'go': ['gofmt', 'goimports'],
       \ 'python': ['autopep8', 'black'],
       \ 'ocaml': ['ocamlformat', 'ocp-indent', 'remove_trailing_lines', 'trim_whitespace'],
       \ 'reason': ['refmt', 'remove_trailing_lines', 'trim_whitespace'],
-      \ 'javascript': ['prettier'],
-      \ 'typescript': ['prettier'],
+      \ 'javascript': ['prettier', 'prettier_eslint'],
+      \ 'typescript': ['prettier', 'prettier_eslint'],
       \ 'css': ['prettier'],
       \ 'yaml': ['trim_whitespace'],
       \ 'php': ['php_cs_fixer'],
-      \ 'haskell': ['stylish-haskell'],
+      \ 'haskell': ['hindent'],
       \ }
 
+" \ '*': ['remove_trailing_lines', 'trim_whitespace'],
 
 " Change hightlight color for are
 hi ALEError cterm=underline ctermbg=NONE ctermfg=Red
@@ -274,8 +276,8 @@ let g:phpfmt_autosave = 0
 " end of vim-phpfmt stuff
 
 " oCaml stuff
-" let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
-" execute "set rtp+=" . g:opamshare . "/merlin/vim"
+let g:opamshare = substitute(system('opam config var share'),'\n$','','''')
+execute "set rtp+=" . g:opamshare . "/merlin/vim"
 
 " ansible stuff
 func! s:AnsibleAnswerInCurrentFolder()
@@ -470,7 +472,7 @@ Fcmd "OpenJiraTicketLine"
 let mapleader=' '
 nnoremap <C-q><C-q> :q!<CR>
 nnoremap <C-w><C-q> :wqa!<CR>
-nnoremap <leader>v :e! ~/.vimrc<CR>
+nnoremap <leader>v :e! ~/.config/nvim/init.vim<CR>
 nnoremap <leader>e :e! %:h<CR>
 nnoremap <leader>p :Files<CR>
 nnoremap <leader>~ :Files ~<CR>
@@ -528,24 +530,30 @@ au FileType rust noremap <buffer> <F7> :make test<CR>
 au FileType rust noremap <buffer> <F8> :make build<CR>
 au FileType rust noremap <buffer> <leader>l :SyntasticToggleMode<CR>
 au FileType cs noremap <buffer> <leader>fi :OmniSharpFixUsings<CR>
+au FileType cs noremap <buffer> <F10> :OmniSharpRestartAllServers<CR>
 autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 
 augroup haMaps
- au FileType haskell nnoremap <buffer> <F1> :HdevtoolsType<CR>
- au FileType haskell nnoremap <buffer> <silent> <F2> :HdevtoolsInfo<CR>
- au FileType haskell nnoremap <buffer> <silent> <F3> :HdevtoolsClear<CR>
  au FileType haskell nmap <buffer> <leader>n <Plug>(coc-diagnostic-next)
  au FileType haskell nmap <buffer> <leader>N <Plug>(coc-diagnostic-prev)
  au FileType haskell nmap <buffer> <leader>t <Plug>(coc-type-definition)
  au FileType haskell nmap <buffer> <leader>d <Plug>(coc-definition)
  au FileType haskell nmap <buffer> <leader>i <Plug>(coc-implementation)
  au FileType haskell nmap <buffer> <leader>r <Plug>(coc-references)
+ au FileType haskell nmap <buffer> <leader>h :call CocActionAsync('doHover')<CR>
 augroup END
 
 augroup fsMaps
   au!
   au FileType fsharp setlocal errorformat=\ %#%f(%l\\\,%c):\ %m
   au FileType fsharp set makeprg=dotnet\ build
+augroup END
+
+augroup coqMaps
+  au!
+  au FileType coq noremap <buffer> <F10> :CoqRestorePanels<CR>
+  au FileType coq noremap <buffer> <Down>  :CoqNext<CR>
+  au FileType coq noremap <buffer> <Up>  :CoqUndo<CR>
 augroup END
 
 set nohls                      " Do not highlight searchs by default, is annoying
@@ -560,7 +568,7 @@ set ignorecase smartcase       " Smarter case for searching
 set exrc                       " Enable .vimrc in the current folder
 set scrolloff=0                " This fix an annoying bug when running
                                "   vim inside a terminal inside another vim
-set fo+=r                      " Format options, add a comment when you press enter from a commented line
-set signcolumn=yes             " Always draw sign column. Prevent buffer moving when adding/deleting sign.
+"set fo+=r                      " Format options, add a comment when you press enter from a commented line
+"set signcolumn=yes             " Always draw sign column. Prevent buffer moving when adding/deleting sign.
 
 set rtp+=~/code/vlisp
