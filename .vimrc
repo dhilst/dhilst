@@ -498,11 +498,11 @@ vnoremap <expr> <F2> ':OverCommandLine %s/'.expand('<c-r>').'<CR>'
 nnoremap :%s/ <ESC>:OverCommandLine %s/<CR>
 
 " movement
-noremap <C-j> <ESC>:wincmd j<CR>
-noremap <C-h> <ESC>:wincmd h<CR>
-noremap <C-k> <ESC>:wincmd k<CR>
-noremap <C-l> <ESC>:wincmd l<CR>
-inoremap \- λ
+" noremap <C-j> <ESC>:wincmd j<CR>
+" noremap <C-h> <ESC>:wincmd h<CR>
+" noremap <C-k> <ESC>:wincmd k<CR>
+" noremap <C-l> <ESC>:wincmd l<CR>
+" inoremap \- λ
 
 au BufWritePre *.cs :OmniSharpCodeFormat
 au FileType go,php,python,cs setlocal ts=4 sts=4 sw=4 et
@@ -549,11 +549,15 @@ augroup fsMaps
   au FileType fsharp set makeprg=dotnet\ build
 augroup END
 
+let g:coqtail_noimap = 1
 augroup coqMaps
   au!
   au FileType coq noremap <buffer> <F10> :CoqRestorePanels<CR>
   au FileType coq noremap <buffer> <Down>  :CoqNext<CR>
   au FileType coq noremap <buffer> <Up>  :CoqUndo<CR>
+  au FileType coq noremap <buffer> <C-j>  :CoqNext<CR>
+  au FileType coq noremap <buffer> <C-K> :CoqUndo<CR>
+  au FileType coq setlocal comments=sO:*\ -,mO:*\ \ ,exO:*),s1:(*,mb:*,ex:*)
 augroup END
 
 set nohls                      " Do not highlight searchs by default, is annoying
@@ -568,7 +572,7 @@ set ignorecase smartcase       " Smarter case for searching
 set exrc                       " Enable .vimrc in the current folder
 set scrolloff=0                " This fix an annoying bug when running
                                "   vim inside a terminal inside another vim
-"set fo+=r                      " Format options, add a comment when you press enter from a commented line
+set fo+=r                      " Format options, add a comment when you press enter from a commented line
 "set signcolumn=yes             " Always draw sign column. Prevent buffer moving when adding/deleting sign.
 
 set rtp+=~/code/vlisp
