@@ -33,8 +33,8 @@
  '(next-error-highlight-no-select t)
  '(next-line-add-newlines nil)
  '(package-selected-packages
-   '(lsp-ui rustic ocamlformat merlin ocp-indent solidity-flycheck solidity-mode geiser-racket geiser magit rbenv dot-mode multiple-cursors evil csharp-mode slime-company expand-region emojify unicode-fonts paredit racket-mode jedi flycheck-mypy drag-stuff blacken use-package lsp-mode helm-rg lean-mode yasnippet-lean yasnippet-snippets idle-highlight-mode smartparens dracula-theme company-coq monokai-theme fzf helm proof-general))
- '(require-final-newline t)
+   '(ein exec-path-from-shell tuareg lsp-ui rustic ocamlformat merlin ocp-indent solidity-flycheck solidity-mode geiser-racket geiser magit rbenv dot-mode multiple-cursors evil csharp-mode slime-company expand-region emojify unicode-fonts paredit racket-mode jedi flycheck-mypy drag-stuff blacken use-package lsp-mode helm-rg lean-mode yasnippet-lean yasnippet-snippets idle-highlight-mode smartparens dracula-theme company-coq monokai-theme fzf helm proof-general))
+ '(require-final-newline nil)
  '(sentence-end-double-space nil)
  '(show-paren-mode t)
  '(show-trailing-whitespace nil)
@@ -42,6 +42,16 @@
 
 ;; Disable splash screen
 (setq inhibit-startup-screen t)
+
+;; exec-path-from-shell
+(setq exec-path-from-shell-arguments nil)
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
+(when (daemonp)
+  (exec-path-from-shell-initialize))
+
+exec-path
 
 ;; OCaml configuration
 ;;  - better error and backtrace matching
@@ -58,16 +68,7 @@
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 
-;; Set PATH from the shel
-;; (defun set-exec-path-from-shell-PATH ()
-;;   (let ((path-from-shell (shell-command-to-string "$SHELL -i -c 'echo $PATH'")))
-;;     (setenv "PATH" path-from-shell)
-;;     (setq exec-path (split-string path-from-shell path-separator))))
-;; (set-exec-path-from-shell-PATH)
-(setenv "PATH" (concat (getenv "PATH") ":/home/geckos/.local/bin:/home/geckos/.local/opam/bin:/home/geckos/.fzf/bin:/home/geckos/.rbenv/shims"))
-(setq-default exec-path (append exec-path '("/home/geckos/.local/opam/bin" "/home/geckos/.rbenv/shims")))
 
-(require 'package)
 
 ;; helm stuff
 (helm-mode 1)
@@ -115,6 +116,7 @@
 (global-set-key (kbd "M-g P") "Π")
 (global-set-key (kbd "M-g S") "Σ")
 (global-set-key (kbd "C-*") 'jpt-toggle-mark-word-at-point)
+(global-set-key (kbd "C-c C-f C-n") (lambda () (interactive) (message (buffer-file-name))))
 
 ;; Set SMerge prefix to `C-c v`
 (setq smerge-command-prefix "\C-cv")
@@ -215,7 +217,7 @@
               ("C-c C-c s" . lsp-rust-analyzer-status))
   :config
   ;; uncomment for less flashiness
-  ;; (setq lsp-eldoc-hook nil)
+  (setq lsp-eldoc-hook nil)
   ;; (setq lsp-enable-symbol-highlighting nil)
   ;; (setq lsp-signature-auto-activate nil)
 
@@ -232,7 +234,7 @@
   :custom
   ;; what to use when checking on-save. "check" is default, I prefer clippy
   (lsp-rust-analyzer-cargo-watch-command "clippy")
-  (lsp-eldoc-render-all t)
+  (lsp-eldoc-render-all nil)
   (lsp-idle-delay 0.6)
   ;; enable / disable the hints as you prefer:
   (lsp-rust-analyzer-server-display-inlay-hints t)
@@ -247,11 +249,11 @@
 
 (use-package lsp-ui
   :ensure
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-peek-always-show t)
-  (lsp-ui-sideline-show-hover t)
-  (lsp-ui-doc-enable nil))
+  :commands lsp-ui-mode)
+  ;; :custom
+  ;; (lsp-ui-peek-always-show t)
+  ;; (lsp-ui-sideline-show-hover t)
+  ;; (lsp-ui-doc-enable t))
 
 (use-package company
   :ensure
@@ -263,7 +265,10 @@
 	      ("C-n". company-select-next)
 	      ("C-p". company-select-previous)
 	      ("M-<". company-select-first)
-	      ("M->". company-select-last)))
+	      ("M->". company-select-last))
+  (:map company-mode-map
+	("<tab>". tab-indent-or-complete)
+	("TAB". tab-indent-or-complete)))
 
 (use-package yasnippet
   :ensure
@@ -272,11 +277,15 @@
   (add-hook 'prog-mode-hook 'yas-minor-mode)
   (add-hook 'text-mode-hook 'yas-minor-mode))
 
-(use-package company
-  ;; ... see above ...
-  (:map company-mode-map
-	("<tab>". tab-indent-or-complete)
-	("TAB". tab-indent-or-complete)))
+(defun tab-indent-or-complete ()
+  (interactive)
+  (if (minibufferp)
+      (minibuffer-complete)
+    (if (or (not yas/minor-mode)
+            (null (do-yas-expand)))
+        (if (check-expansion)
+            (company-complete-common)
+          (indent-for-tab-command)))))
 
 (defun company-yasnippet-or-completion ()
   (interactive)
@@ -295,17 +304,15 @@
   (let ((yas/fallback-behavior 'return-nil))
     (yas/expand)))
 
-(defun tab-indent-or-complete ()
-  (interactive)
-  (if (minibufferp)
-      (minibuffer-complete)
-    (if (or (not yas/minor-mode)
-            (null (do-yas-expand)))
-        (if (check-expansion)
-            (company-complete-common)
-          (indent-for-tab-command)))))
-
 (use-package flycheck :ensure)
 
 (setq lsp-rust-analyzer-server-display-inlay-hints t)
 ;; end of Rust stuff
+
+(setq lsp-log-io t)
+
+;; JS stuff
+(add-hook 'js-mode-hook 'hs-minor-mode)
+(eval-after-load 'js
+  ;; Hide or show objects with Ctrl Enter
+  (define-key js-mode-map (kbd "C-RET") 'hs-toggle-hiding))
